@@ -76,9 +76,9 @@ OSError: 4
 Others require the socket to be rebound:
 
 ```
-Connection from ('10.2.1.193', 8080)
+Connection from ('client', 8080)
 Accepting...
 Error accepting request: 7
-Binding: 10.2.2.136:8080
+Binding: server:8080
 Accepting...
 ```
