@@ -1,10 +1,17 @@
 # prometheus_express
 
-A Prometheus SDK for CircuitPython/MicroPython boards.
+A [Prometheus](https://prometheus.io/) SDK for CircuitPython/MicroPython boards, allowing sensor data to be integrated
+into existing Prometheus/Grafana monitoring infrastructure.
 
 - only depends on `socket`
 - API-compatible with [prometheus/client_python](https://github.com/prometheus/client_python)
+- basic HTTP server
 - not terribly slow (`wrk` reports upwards of 100rps with 2 metrics)
+
+## Supported Hardware
+
+This library is developer for the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running
+MicroPython 4.1.0 or better, with an [Adafruit Ethernet FeatherWing](https://www.adafruit.com/product/3201) attached.
 
 ## Supported Features
 
@@ -33,6 +40,12 @@ Extends [counter](#counter) with `set`.
 ### Labels
 
 Labels are not yet implemented.
+
+## Planned Features
+
+- respect request path, only respond to `/metrics`
+- additional metric types (Histogram, Summary)
+- push metrics
 
 ## Known Issues
 
