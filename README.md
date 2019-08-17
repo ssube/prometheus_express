@@ -8,6 +8,22 @@ into existing Prometheus/Grafana monitoring infrastructure.
 - basic HTTP server
 - not terribly slow (`wrk` reports upwards of 100rps with 2 metrics)
 
+## Contents
+
+- [prometheus_express](#prometheusexpress)
+  - [Contents](#contents)
+  - [Supported Hardware](#supported-hardware)
+  - [Supported Features](#supported-features)
+    - [HTTP](#http)
+    - [Labels](#labels)
+    - [Metric Types](#metric-types)
+      - [Counter](#counter)
+      - [Gauge](#gauge)
+    - [Registries](#registries)
+  - [Planned Features](#planned-features)
+  - [Known Issues](#known-issues)
+    - [Load Causes OSError](#load-causes-oserror)
+
 ## Supported Hardware
 
 This library is developer for the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running
@@ -23,23 +39,41 @@ with Chrome, curl, and Prometheus itself.
 Call `start_http_server(port)` to bind a socket and begin listening.
 
 Call `await_http_request(server, registry)` to await an incoming HTTP request and respond with the metrics in
-`registry`. As 
-
-## Metric Types
-
-Currently, `Counter` and `Gauge` are the only metric types implemented.
-
-### Counter
-
-Both `inc` and `dec` are implemented.
-
-### Gauge
-
-Extends [counter](#counter) with `set`.
+`registry`.
 
 ### Labels
 
 Labels are not yet implemented.
+
+### Metric Types
+
+Currently, `Counter` and `Gauge` are the only metric types implemented.
+
+#### Counter
+
+Both `inc` and `dec` are implemented.
+
+#### Gauge
+
+Extends [counter](#counter) with `set`.
+
+### Registries
+
+Registries may be created with a namespace: `CollectorRegistry(namespace='foo')`
+
+Call `registry.print()` to format metrics in Prometheus'
+[plain text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/#text-based-format):
+
+```
+# HELP prom_express_test_counter a test counter
+# TYPE prom_express_test_counter counter
+prom_express_test_counter 1588
+# HELP prom_express_test_gauge a test gauge
+# TYPE prom_express_test_gauge gauge
+prom_express_test_gauge 3887
+```
+
+Metrics may be registered with multiple registries.
 
 ## Planned Features
 
