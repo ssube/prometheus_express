@@ -26,7 +26,7 @@ into existing Prometheus/Grafana monitoring infrastructure.
 
 ## Supported Hardware
 
-This library is developer for the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running
+This library is developed for the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running
 MicroPython 4.1.0 or better, with an [Adafruit Ethernet FeatherWing](https://www.adafruit.com/product/3201) attached.
 
 ## Supported Features
@@ -93,7 +93,7 @@ Not sure what is causing the errors, but it is not predictable and may not appea
 > ./wrk -c 1 -d 60s -t 1 http://server:8080/
 Running 1m test @ http://server:8080/
   1 threads and 1 connections
-^C  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
     Latency     8.64ms  485.57us  12.81ms   97.75%
     Req/Sec   111.60      5.21   121.00     71.00%
   2222 requests in 20.61s, 671.83KB read

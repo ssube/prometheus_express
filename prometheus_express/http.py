@@ -16,9 +16,9 @@ def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/me
 
 def await_http_request(server_socket, registry):
     conn, addr = server_socket.accept()
-    req = conn.recv(1024).decode(http_encoding)
+    print('Connection: {}'.format(addr))
 
-    print('Connection from {}\n{}'.format(addr, req))
+    req = conn.recv(1024).decode(http_encoding)
     req_headers = parse_headers(req)
     print('Headers: {}'.format(req_headers))
 
