@@ -82,7 +82,6 @@ def main():
     while True:
         metric_c.inc(random.randint(0, 50))
         metric_g.set(random.randint(0, 5000))
-        print('Accepting...')
         try:
             await_http_request(server, registry)
         except OSError as err:

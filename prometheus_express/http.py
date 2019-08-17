@@ -1,5 +1,6 @@
 import socket
 
+http_break = '\r\n'
 http_encoding = 'utf-8'
 
 
@@ -17,13 +18,22 @@ def await_http_request(server_socket, registry):
     conn, addr = server_socket.accept()
     req = conn.recv(1024).decode(http_encoding)
 
-    print('Connection from {}'.format(addr))
+    print('Connection from {}\n{}'.format(addr, req))
+    req_headers = parse_headers(req)
+    print('Headers: {}'.format(req_headers))
 
-    line_break = '\n'.encode(http_encoding)
-    content_lines = registry.print()
+    if req_headers['path'] == registry.path:
+        metrics = registry.print()
+        send_http_response(conn, http_break.join(metrics))
+    else:
+        send_http_response(conn, 'Hello World!')
 
-    content_data = '\n'.join(content_lines).encode(http_encoding)
+
+def send_http_response(conn, body):
+    content_data = body.encode(http_encoding)
     content_length = len(content_data)
+
+    line_break = http_break.encode(http_encoding)
     headers = print_http_headers(length=content_length)
 
     try:
@@ -46,3 +56,17 @@ def print_http_headers(status='200 OK', type='text/plain', length=0):
         'Content-Type: {}'.format(type),
         'Content-Length: {}'.format(length),
     ]
+
+
+def parse_headers(req):
+    if 'HTTP/' not in req:
+        raise ValueError('request does not have HTTP/x.y marker')
+
+    lines = req.split(http_break)
+    start = lines[0].split(' ')
+
+    return {
+        'method': start[0],
+        'path': start[1],
+        'http': start[2],
+    }
