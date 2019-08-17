@@ -14,7 +14,7 @@ def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/me
     return http_socket
 
 
-def await_http_request(server_socket, registry):
+def await_http_request(server_socket, router):
     conn, addr = server_socket.accept()
     print('Connection: {}'.format(addr))
 
@@ -22,19 +22,21 @@ def await_http_request(server_socket, registry):
     req_headers = parse_headers(req)
     print('Headers: {}'.format(req_headers))
 
-    if req_headers['path'] == registry.path:
-        metrics = registry.print()
-        send_http_response(conn, http_break.join(metrics))
+    handler = router.select(req_headers['method'], req_headers['path'])
+    resp = handler(req_headers, '')
+
+    if 'type' in resp:
+        send_http_response(conn, resp['status'], resp['content'], type=resp['type'])
     else:
-        send_http_response(conn, 'Hello World!')
+        send_http_response(conn, resp['status'], resp['content'])
 
 
-def send_http_response(conn, body):
+def send_http_response(conn, status, body, type='text/plain'):
     content_data = body.encode(http_encoding)
     content_length = len(content_data)
 
     line_break = http_break.encode(http_encoding)
-    headers = print_http_headers(length=content_length)
+    headers = print_http_headers(status=status, type=type, length=content_length)
 
     try:
         for line in headers:

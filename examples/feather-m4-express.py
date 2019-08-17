@@ -1,7 +1,8 @@
 # custom
-from prometheus_express.http import start_http_server, await_http_request
 from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
+from prometheus_express.router import Router
+from prometheus_express.server import start_http_server, await_http_request
 
 # system
 import board
@@ -62,13 +63,30 @@ def main():
     ready = False
     bound = False
 
-    server = False
-
     registry = CollectorRegistry(namespace='prom_express')
     metric_c = Counter('test_counter',
                        'a test counter', registry=registry)
     metric_g = Gauge('test_gauge',
                      'a test gauge', registry=registry)
+
+    def icon_handler(headers, body):
+        return {
+            'status': '200 OK',
+            'type': 'image/png;base64',
+            'content': 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVQI12N8HmPBxMPHxMTDx8TNBwAUNwHSqFS0zAAAAABJRU5ErkJggg==',
+        }
+
+    def prom_handler(headers, body):
+        return {
+            'status': '200 OK',
+            'content': '\r\n'.join(registry.print()),
+        }
+
+    router = Router([
+        ('GET', '/favicon.ico', icon_handler),
+        ('GET', '/metrics', prom_handler),
+    ])
+    server = False
 
     rgb[0] = RED  # starting
     while ready == False:
@@ -83,7 +101,7 @@ def main():
         metric_c.inc(random.randint(0, 50))
         metric_g.set(random.randint(0, 5000))
         try:
-            await_http_request(server, registry)
+            await_http_request(server, router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
             server, bound = bind()

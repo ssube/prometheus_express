@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
 
 # custom
-from prometheus_express.http import start_http_server, await_http_request
 from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
+from prometheus_express.server import start_http_server, await_http_request
 
 # system
 import socket

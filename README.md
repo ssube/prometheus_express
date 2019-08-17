@@ -4,8 +4,10 @@ A [Prometheus](https://prometheus.io/) SDK for CircuitPython/MicroPython boards,
 into existing Prometheus/Grafana monitoring infrastructure.
 
 - only depends on `socket`
-- API-compatible with [prometheus/client_python](https://github.com/prometheus/client_python)
-- basic HTTP server with path routing
+- runs on CircuitPython 4.x for embedded devices
+- runs on CPython 3.x for local testing
+- API compatible with the official [prometheus/client_python](https://github.com/prometheus/client_python)
+- basic HTTP server with path/method routing
 - not terribly slow (`wrk` reports upwards of 100rps with 2 metrics)
 
 ## Contents
