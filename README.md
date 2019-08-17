@@ -5,7 +5,7 @@ into existing Prometheus/Grafana monitoring infrastructure.
 
 - only depends on `socket`
 - API-compatible with [prometheus/client_python](https://github.com/prometheus/client_python)
-- basic HTTP server
+- basic HTTP server with path routing
 - not terribly slow (`wrk` reports upwards of 100rps with 2 metrics)
 
 ## Contents
@@ -77,9 +77,8 @@ Metrics may be registered with multiple registries.
 
 ## Planned Features
 
-- respect request path, only respond to `/metrics`
-- additional metric types (Histogram, Summary)
-- push metrics
+- `push_to_gateway`
+- remaining metric types (Histogram, Summary)
 
 ## Known Issues
 
