@@ -5,7 +5,7 @@ class Metric():
     labelKeys = []
     metricType = 'untyped'
 
-    def __init__(self, name, desc, labels = [], registry = False):
+    def __init__(self, name, desc, labels=[], registry=False):
         self.name = name
         self.desc = desc
         self.labelKeys = labels
@@ -46,7 +46,7 @@ class Counter(Metric):
 
     def print(self, namespace):
         return super().print(namespace) + [
-            '{} {}'.format(self.name, self.value)
+            '{} {}'.format(self.printName(namespace), self.value)
         ]
 
 

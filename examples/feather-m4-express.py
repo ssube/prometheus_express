@@ -64,10 +64,10 @@ def main():
 
     server = False
 
-    registry = CollectorRegistry()
-    metric_c = Counter('prom_express_test_counter',
+    registry = CollectorRegistry(namespace='prom_express')
+    metric_c = Counter('test_counter',
                        'a test counter', registry=registry)
-    metric_g = Gauge('prom_express_test_gauge',
+    metric_g = Gauge('test_gauge',
                      'a test gauge', registry=registry)
 
     rgb[0] = RED  # starting
