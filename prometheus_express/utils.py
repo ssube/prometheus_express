@@ -22,3 +22,14 @@ def bind_server(eth):
 
     print('Binding: {}:{}'.format(ip_addr, ip_port))
     return (start_http_server(ip_port, address=ip_addr), True)
+
+
+def scan_i2c_bus(i2c):
+    while not i2c.try_lock():
+        pass
+
+    print('I2C devices:', [
+        hex(x) for x in i2c.scan()
+    ])
+
+    i2c.unlock()
