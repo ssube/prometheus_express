@@ -5,6 +5,7 @@ from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
+from prometheus_express.utils import check_network
 
 # system
 import socket
@@ -17,24 +18,11 @@ BLUE = (0, 0, 255)
 
 rgb = [()]
 
+
 def ifconfig():
     hostname = socket.gethostname()
     ip_addr = socket.gethostbyname(hostname)
     return (ip_addr, 0, 0, 0)
-
-def check_network():
-    network = ifconfig()
-    online = True
-
-    print('Online: {}'.format(online))
-    if online == False:
-        return False
-
-    print('Network: {}'.format(network))
-    if network[0] == '0.0.0.0':
-        return False
-
-    return True
 
 
 def bind():
@@ -67,11 +55,11 @@ def main():
     server = False
 
     rgb[0] = RED  # starting
-    while ready == False:
+    while not ready:
         ready = check_network()
 
     rgb[0] = BLUE  # connected
-    while bound == False:
+    while not bound:
         server, bound = bind()
 
     rgb[0] = GREEN  # ready

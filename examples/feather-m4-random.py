@@ -2,7 +2,8 @@
 from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
-from prometheus_express.server import start_http_server, await_http_request
+from prometheus_express.server import start_http_server
+from prometheus_express.utils import check_network
 
 # system
 import board
@@ -33,22 +34,8 @@ led.direction = digitalio.Direction.OUTPUT
 
 rgb = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
 
-
-def check_network():
-    online = eth.connected
-    network = eth.ifconfig()
-
-    led.value = online
-
-    print('Online: {}'.format(online))
-    if online == False:
-        return False
-
-    print('Network: {}'.format(network))
-    if network[0] == '0.0.0.0':
-        return False
-
-    return True
+time.sleep(0.5)
+led.value = check_network()
 
 
 def bind():
@@ -89,11 +76,11 @@ def main():
     server = False
 
     rgb[0] = RED  # starting
-    while ready == False:
+    while not ready:
         ready = check_network()
 
     rgb[0] = BLUE  # connected
-    while bound == False:
+    while not bound:
         server, bound = bind()
 
     rgb[0] = GREEN  # ready
@@ -101,7 +88,7 @@ def main():
         metric_c.inc(random.randint(0, 50))
         metric_g.set(random.randint(0, 5000))
         try:
-            await_http_request(server, router)
+            server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
             server, bound = bind()
