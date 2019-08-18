@@ -12,7 +12,6 @@ def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/me
     http_socket.listen(1)
 
     try:
-        http_socket.setblocking(False)
         http_socket.settimeout(5.0)
     except OSError:
         print('Unable to set socket timeout')
