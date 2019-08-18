@@ -9,7 +9,6 @@ from prometheus_express.utils import bind_server, check_network
 import board
 import busio
 import digitalio
-import random
 import socket
 import time
 
@@ -81,6 +80,7 @@ def main():
 
     rgb[0] = RED  # starting
     while not ready:
+        time.sleep(0.5)
         ready = check_network(eth)
         led.value = ready
 
@@ -102,6 +102,8 @@ def main():
         except OSError as err:
             print('Error accepting request: {}'.format(err))
             server, bound = bind_server(eth)
+        except Exception as err:
+            print('Unknown error: {}'.format(err))
 
 
 main()
