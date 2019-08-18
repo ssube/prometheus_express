@@ -21,6 +21,7 @@ into existing Prometheus/Grafana monitoring infrastructure.
     - [Metric Types](#metric-types)
       - [Counter](#counter)
       - [Gauge](#gauge)
+      - [Summary](#summary)
     - [Registries](#registries)
   - [Planned Features](#planned-features)
   - [Known Issues](#known-issues)
@@ -38,26 +39,25 @@ MicroPython 4.1.0 or better, with an [Adafruit Ethernet FeatherWing](https://www
 This module implements a very rudimentary HTTP server that likely violates some part of the spec. However, it works
 with Chrome, curl, and Prometheus itself.
 
-Call `start_http_server(port)` to bind a socket and begin listening.
-
-Call `await_http_request(server, registry)` to await an incoming HTTP request and respond with the metrics in
-`registry`.
-
 ### Labels
 
 Labels are not yet implemented.
 
 ### Metric Types
 
-Currently, `Counter` and `Gauge` are the only metric types implemented.
+`Counter`, `Gauge`, and `Summary` are implemented. Labels are not (yet).
 
 #### Counter
 
-Both `inc` and `dec` are implemented.
+Incremental values. Implements `inc(value)` and `dec(value)`.
 
 #### Gauge
 
-Extends [counter](#counter) with `set`.
+Absolute values. Extends [counter](#counter) with `set(value)`.
+
+#### Summary
+
+Prints count and total of `observe(value)`.
 
 ### Registries
 

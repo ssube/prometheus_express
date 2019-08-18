@@ -1,4 +1,19 @@
+def print_help(name, desc, type):
+    return [
+        '# HELP {} {}'.format(name, desc),
+        '# TYPE {} {}'.format(name, type),
+    ]
+
+
+def print_name(namespace, name):
+    if namespace != '':
+        return '{}_{}'.format(namespace, name)
+    else:
+        return name
+
 # base class for metric types
+
+
 class Metric():
     name = ''
     desc = ''
@@ -21,17 +36,7 @@ class Metric():
         return self
 
     def print(self, namespace):
-        name = self.printName(namespace)
-        return [
-            '# HELP {} {}'.format(name, self.desc),
-            '# TYPE {} {}'.format(name, self.metricType),
-        ]
-
-    def printName(self, namespace):
-        if namespace != '':
-            return '{}_{}'.format(namespace, self.name)
-        else:
-            return self.name
+        return print_help(print_name(namespace, self.name), self.desc, self.metricType)
 
 
 class Counter(Metric):
@@ -46,7 +51,7 @@ class Counter(Metric):
 
     def print(self, namespace):
         return super().print(namespace) + [
-            '{} {}'.format(self.printName(namespace), self.value)
+            '{} {}'.format(print_name(namespace, self.name), self.value)
         ]
 
 
@@ -55,3 +60,21 @@ class Gauge(Counter):
 
     def set(self, value):
         self.value = value
+
+
+class Summary(Metric):
+    metricType = 'summary'
+    valueCount = 0
+    valueTotal = 0
+
+    def observe(self, value):
+        self.valueCount += 1
+        self.valueTotal += value
+
+    def print(self, namespace):
+        nn = print_name(namespace, self.name)
+        return print_help(nn + '_count', self.desc, self.metricType) + [
+            '{}_count {}'.format(nn, self.valueCount),
+        ] + print_help(nn + '_total', self.desc, self.metricType) + [
+            '{}_total {}'.format(nn, self.valueTotal),
+        ]
