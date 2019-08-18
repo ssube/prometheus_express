@@ -9,6 +9,9 @@ def print_labels(keys, values):
     if len(keys) != len(values):
         raise ValueError('length of label values must equal label keys')
 
+    if len(keys) == 0:
+        return ''
+
     labels = []
     for k, v in zip(keys, values):
         labels.append('{}="{}"'.format(k, v))
