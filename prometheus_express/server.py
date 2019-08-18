@@ -4,7 +4,7 @@ http_break = '\r\n'
 http_encoding = 'utf-8'
 
 
-def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/metrics'):
+def start_http_server(port, address='0.0.0.0'):
     bind_address = (address, port)
 
     http_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,8 +13,8 @@ def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/me
 
     try:
         http_socket.settimeout(5.0)
-    except OSError:
-        print('Unable to set socket timeout')
+    except OSError as err:
+        print('Unable to set socket timeout:', err)
 
     return Server(http_socket)
 
