@@ -18,15 +18,18 @@ BLUE = (0, 0, 255)
 
 rgb = [()]
 
+class Network():
+    connected = True
 
-def ifconfig():
-    hostname = socket.gethostname()
-    ip_addr = socket.gethostbyname(hostname)
-    return (ip_addr, 0, 0, 0)
+    def ifconfig(self):
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname(hostname)
+        return (ip_addr, 0, 0, 0)
 
+eth = Network()
 
-def bind():
-    ip_addr = ifconfig()[0]
+def bind(eth):
+    ip_addr = eth.ifconfig()[0]
     ip_port = 8080
 
     print('Binding: {}:{}'.format(ip_addr, ip_port))
@@ -56,11 +59,11 @@ def main():
 
     rgb[0] = RED  # starting
     while not ready:
-        ready = check_network()
+        ready = check_network(eth)
 
     rgb[0] = BLUE  # connected
     while not bound:
-        server, bound = bind()
+        server, bound = bind(eth)
 
     rgb[0] = GREEN  # ready
     while True:
@@ -70,7 +73,7 @@ def main():
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server, bound = bind()
+            server, bound = bind(eth)
 
 
 main()

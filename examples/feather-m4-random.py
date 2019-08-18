@@ -35,10 +35,10 @@ led.direction = digitalio.Direction.OUTPUT
 rgb = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
 
 time.sleep(0.5)
-led.value = check_network()
+led.value = check_network(eth)
 
 
-def bind():
+def bind(eth):
     ip_addr = eth.ifconfig()[0]
     ip_port = 8080
 
@@ -77,11 +77,12 @@ def main():
 
     rgb[0] = RED  # starting
     while not ready:
-        ready = check_network()
+        ready = check_network(eth)
+        led.value = ready
 
     rgb[0] = BLUE  # connected
     while not bound:
-        server, bound = bind()
+        server, bound = bind(eth)
 
     rgb[0] = GREEN  # ready
     while True:
@@ -91,7 +92,7 @@ def main():
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server, bound = bind()
+            server, bound = bind(eth)
 
 
 main()
