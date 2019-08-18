@@ -5,15 +5,25 @@ def print_help(name, desc, type):
     ]
 
 
+def print_labels(keys, values):
+    if len(keys) != len(values):
+        raise ValueError('length of label values must equal label keys')
+
+    labels = []
+    for k, v in zip(keys, values):
+        labels.append('{}="{}"'.format(k, v))
+
+    return '{' + ','.join(labels) + '}'
+
+
 def print_name(namespace, name):
     if namespace != '':
         return '{}_{}'.format(namespace, name)
     else:
         return name
 
+
 # base class for metric types
-
-
 class Metric():
     name = ''
     desc = ''
@@ -25,14 +35,19 @@ class Metric():
         self.desc = desc
         self.labelKeys = labels
 
+        self.emptyLabels = (None,) * len(labels)
+        self.labelValues = self.emptyLabels
+        self.values = {
+            self.emptyLabels: 0,
+        }
+
         if registry != False:
             registry.register(self)
 
     # TODO: fluent API for labeling metrics
     def labels(self, *labelValues):
-        if len(labelValues) != len(self.labelKeys):
-            raise ValueError('length of label values must equal label keys')
-
+        #labels = populate_labels(self.labelKeys, labelValues)
+        self.labelValues = labelValues
         return self
 
     def print(self, namespace):
@@ -41,40 +56,60 @@ class Metric():
 
 class Counter(Metric):
     metricType = 'counter'
-    value = 0
 
     def inc(self, value):
-        self.value += value
+        if self.labelValues in self.values:
+            self.values[self.labelValues] += value
+        else:
+            self.values[self.labelValues] = value
 
     def dec(self, value):
-        self.value -= value
+        if self.labelValues in self.values:
+            self.values[self.labelValues] -= value
+        else:
+            self.values[self.labelValues] = value
+
 
     def print(self, namespace):
-        return super().print(namespace) + [
-            '{} {}'.format(print_name(namespace, self.name), self.value)
-        ]
+        lines = super().print(namespace)
+        for l, v in self.values.items():
+            lines.append('{}{} {}'.format(print_name(
+                namespace, self.name), print_labels(self.labelKeys, l), v))
+
+        return lines
 
 
 class Gauge(Counter):
     metricType = 'gauge'
 
     def set(self, value):
-        self.value = value
+        self.values[self.labelValues] = value
 
 
 class Summary(Metric):
     metricType = 'summary'
-    valueCount = 0
-    valueTotal = 0
+
+    def __init__(self, name, desc, labels=[], registry=False):
+        Metric.__init__(self, name, desc, labels, registry=registry)
+        self.values = {
+            self.emptyLabels: (0, 0),
+        }
 
     def observe(self, value):
-        self.valueCount += 1
-        self.valueTotal += value
+        if self.labelValues in self.values:
+            prev = self.values.get(self.labelValues)
+            self.values[self.labelValues] = (prev[0] + 1, prev[1] + value)
+        else:
+            self.values[self.labelValues] = (1, value)
 
     def print(self, namespace):
         nn = print_name(namespace, self.name)
-        return print_help(nn + '_count', self.desc, self.metricType) + [
-            '{}_count {}'.format(nn, self.valueCount),
-        ] + print_help(nn + '_total', self.desc, self.metricType) + [
-            '{}_total {}'.format(nn, self.valueTotal),
-        ]
+        lines = super().print(namespace)
+        for l, v in self.values.items():
+            ll = print_labels(self.labelKeys, l)
+            lines.extend(print_help(nn + '_count', self.desc, self.metricType))
+            lines.append('{}_count{} {}'.format(nn, ll, v[0]))
+            lines.extend(print_help(nn + '_total', self.desc, self.metricType))
+            lines.append('{}_total{} {}'.format(nn, ll, v[1]))
+
+        return lines
