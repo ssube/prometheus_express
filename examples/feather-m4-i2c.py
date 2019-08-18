@@ -59,18 +59,14 @@ def main():
     bound = False
 
     registry = CollectorRegistry(namespace='prom_express')
-    metric_gas = Gauge('bme680_gas',
+    metric_gas = Gauge('gas',
                        'gas from the bme680 sensor', registry=registry)
-    metric_humidity = Gauge('bme680_humidity',
-                            'humidity from the bme680 sensor', registry=registry)
-    metric_humidity2 = Gauge('si7021_humidity',
-                             'relative humidity from the si7021 sensor', registry=registry)
-    metric_pressure = Gauge('bme680_pressure',
+    metric_humidity = Gauge('humidity',
+                            'humidity from both sensors', ['sensor'], registry=registry)
+    metric_pressure = Gauge('pressure',
                             'pressure from the bme680 sensor', registry=registry)
-    metric_temperature = Gauge('bme680_temperature',
-                               'temperature from the bme680 sensor', registry=registry)
-    metric_temperature2 = Gauge('si7021_temperature',
-                                'temperature from the si7021 sensor', registry=registry)
+    metric_temperature = Gauge('temperature',
+                               'temperature from both sensors', ['sensor'], registry=registry)
 
     def prom_handler(headers, body):
         return {
@@ -95,11 +91,11 @@ def main():
     rgb[0] = GREEN  # ready
     while True:
         metric_gas.set(sensor_bme680.gas)
-        metric_humidity.set(sensor_bme680.humidity)
-        metric_humidity2.set(sensor_si7021.relative_humidity)
+        metric_humidity.labels('bme680').set(sensor_bme680.humidity)
+        metric_humidity.labels('si7021').set(sensor_si7021.relative_humidity)
         metric_pressure.set(sensor_bme680.pressure)
-        metric_temperature.set(sensor_bme680.temperature)
-        metric_temperature2.set(sensor_si7021.temperature)
+        metric_temperature.labels('bme680').set(sensor_bme680.temperature)
+        metric_temperature.labels('si7021').set(sensor_si7021.temperature)
 
         try:
             server.accept(router)
