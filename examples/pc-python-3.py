@@ -38,10 +38,11 @@ def main():
 
     registry = CollectorRegistry(namespace='prom_express')
     metric_t = Counter('si7021_temperature',
-                     'temperature from the si7021 sensor', registry=registry)
+                       'temperature from the si7021 sensor', ['random_tag'], registry=registry)
     metric_h = Gauge('si7021_humidity',
-                     'humidity from the si7021 sensor', registry=registry)
-    metric_s = Summary('si7021_random', 'random data', registry=registry)
+                     'humidity from the si7021 sensor', ['random_tag'], registry=registry)
+    metric_s = Summary('si7021_random', 'random data', [
+                       'random_tag'], registry=registry)
 
     def prom_handler(headers, body):
         return {
@@ -64,9 +65,10 @@ def main():
 
     rgb[0] = GREEN  # ready
     while True:
-        metric_h.set(random.randint(25, 100))
-        metric_t.inc(random.randint(1, 5))
-        metric_s.observe(random.randint(0, 15))
+        metric_h.labels(str(random.randint(1, 5))).set(random.randint(25, 100))
+        metric_t.labels(str(random.randint(1, 5))).inc(random.randint(1, 5))
+        metric_s.labels(str(random.randint(1, 5))).observe(
+            random.randint(0, 15))
         try:
             server.accept(router)
         except socket.timeout:
