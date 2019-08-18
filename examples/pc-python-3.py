@@ -3,7 +3,8 @@
 # custom
 from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
-from prometheus_express.server import start_http_server, await_http_request
+from prometheus_express.router import Router
+from prometheus_express.server import start_http_server
 
 # system
 import socket
@@ -48,13 +49,22 @@ def main():
     ready = False
     bound = False
 
-    server = False
-
     registry = CollectorRegistry(namespace='prom_express')
     metric_t = Gauge('si7021_temperature',
                      'temperature from the si7021 sensor', registry=registry)
     metric_h = Gauge('si7021_humidity',
                      'humidity from the si7021 sensor', registry=registry)
+
+    def prom_handler(headers, body):
+        return {
+            'status': '200 OK',
+            'content': '\r\n'.join(registry.print()),
+        }
+
+    router = Router([
+        ('GET', '/metrics', prom_handler),
+    ])
+    server = False
 
     rgb[0] = RED  # starting
     while ready == False:
@@ -69,7 +79,7 @@ def main():
         metric_h.set(50)
         metric_t.set(25)
         try:
-            await_http_request(server, registry)
+            server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
             server, bound = bind()
