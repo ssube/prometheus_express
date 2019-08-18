@@ -4,15 +4,15 @@ http_break = '\r\n'
 http_encoding = 'utf-8'
 
 
-def start_http_server(port, address='0.0.0.0'):
+def start_http_server(port, address='0.0.0.0', depth=2, timeout=5.0):
     bind_address = (address, port)
 
     http_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     http_socket.bind(bind_address)
-    http_socket.listen(1)
+    http_socket.listen(depth)
 
     try:
-        http_socket.settimeout(5.0)
+        http_socket.settimeout(timeout)
     except OSError as err:
         print('Unable to set socket timeout:', err)
 
@@ -30,11 +30,11 @@ class Server():
         print('Connection: {}'.format(addr))
 
         req = conn.recv(1024).decode(http_encoding)
-        req_headers = self.parse_headers(req)
+        req_headers, req_body = self.parse_headers(req)
         print('Headers: {}'.format(req_headers))
 
         handler = router.select(req_headers['method'], req_headers['path'])
-        resp = handler(req_headers, '')
+        resp = handler(req_headers, req_body)
 
         if 'type' in resp:
             return self.send_response(conn, resp['status'],
@@ -77,8 +77,8 @@ class Server():
         lines = req.split(http_break)
         start = lines[0].split(' ')
 
-        return {
+        return ({
             'method': start[0],
             'path': start[1],
             'http': start[2],
-        }
+        }, '')
