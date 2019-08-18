@@ -17,64 +17,69 @@ def start_http_server(port, address='0.0.0.0', extraRoutes={}, metricsRoute='/me
     except OSError:
         print('Unable to set socket timeout')
 
-    return http_socket
+    return Server(http_socket)
 
 
-def await_http_request(server_socket, router):
-    conn, addr = server_socket.accept()
-    print('Connection: {}'.format(addr))
+class Server():
+    http_socket = False
 
-    req = conn.recv(1024).decode(http_encoding)
-    req_headers = parse_headers(req)
-    print('Headers: {}'.format(req_headers))
+    def __init__(self, http_socket):
+        self.http_socket = http_socket
 
-    handler = router.select(req_headers['method'], req_headers['path'])
-    resp = handler(req_headers, '')
+    def accept(self, router):
+        conn, addr = self.http_socket.accept()
+        print('Connection: {}'.format(addr))
 
-    if 'type' in resp:
-        send_http_response(conn, resp['status'], resp['content'], type=resp['type'])
-    else:
-        send_http_response(conn, resp['status'], resp['content'])
+        req = conn.recv(1024).decode(http_encoding)
+        req_headers = self.parse_headers(req)
+        print('Headers: {}'.format(req_headers))
 
+        handler = router.select(req_headers['method'], req_headers['path'])
+        resp = handler(req_headers, '')
 
-def send_http_response(conn, status, body, type='text/plain'):
-    content_data = body.encode(http_encoding)
-    content_length = len(content_data)
+        if 'type' in resp:
+            return self.send_response(conn, resp['status'],
+                                      resp['content'], type=resp['type'])
+        else:
+            return self.send_response(conn, resp['status'], resp['content'])
 
-    line_break = http_break.encode(http_encoding)
-    headers = print_http_headers(status=status, type=type, length=content_length)
+    def send_response(self, conn, status, body, type='text/plain'):
+        content_data = body.encode(http_encoding)
+        content_length = len(content_data)
 
-    try:
-        for line in headers:
-            conn.send(line.encode(http_encoding))
+        line_break = http_break.encode(http_encoding)
+        headers = self.format_headers(
+            status=status, type=type, length=content_length)
+
+        try:
+            for line in headers:
+                conn.send(line.encode(http_encoding))
+                conn.send(line_break)
+
             conn.send(line_break)
+            conn.send(content_data)
 
-        conn.send(line_break)
-        conn.send(content_data)
+            conn.close()
+        except OSError as err:
+            print('Error sending response: {}'.format(err))
 
-        conn.close()
-    except OSError as err:
-        print('Error sending response: {}'.format(err))
+    def format_headers(self, status='200 OK', type='text/plain', length=0):
+        return [
+            'HTTP/1.1 {}'.format(status),
+            'Connection: close',
+            'Content-Type: {}'.format(type),
+            'Content-Length: {}'.format(length),
+        ]
 
+    def parse_headers(self, req):
+        if 'HTTP/' not in req:
+            raise ValueError('request does not have HTTP/x.y marker')
 
-def print_http_headers(status='200 OK', type='text/plain', length=0):
-    return [
-        'HTTP/1.1 {}'.format(status),
-        'Connection: close',
-        'Content-Type: {}'.format(type),
-        'Content-Length: {}'.format(length),
-    ]
+        lines = req.split(http_break)
+        start = lines[0].split(' ')
 
-
-def parse_headers(req):
-    if 'HTTP/' not in req:
-        raise ValueError('request does not have HTTP/x.y marker')
-
-    lines = req.split(http_break)
-    start = lines[0].split(' ')
-
-    return {
-        'method': start[0],
-        'path': start[1],
-        'http': start[2],
-    }
+        return {
+            'method': start[0],
+            'path': start[1],
+            'http': start[2],
+        }
