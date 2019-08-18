@@ -20,7 +20,7 @@ BLUE = (0, 0, 255)
 rgb = [()]
 
 
-class Network():
+class MockNetwork():
     connected = True
 
     def ifconfig(self):
@@ -29,7 +29,7 @@ class Network():
         return (ip_addr, 0, 0, 0)
 
 
-eth = Network()
+eth = MockNetwork()
 
 
 def main():

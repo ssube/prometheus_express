@@ -3,7 +3,7 @@ from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
-from prometheus_express.utils import bind_server, check_network
+from prometheus_express.utils import bind_server, check_network, scan_i2c_bus
 
 # system
 import board
@@ -23,13 +23,9 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# scan i2c bus
+# set up and scan i2c bus
 i2c = busio.I2C(board.SCL, board.SDA)
-while not i2c.try_lock():
-    pass
-
-print([hex(x) for x in i2c.scan()])
-i2c.unlock()
+scan_i2c_bus(i2c)
 
 # set up sensors
 sensor_bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c)
@@ -67,14 +63,11 @@ def main():
     metric_temperature = Gauge('temperature',
                                'temperature from both sensors', ['sensor'], registry=registry)
 
-    def prom_handler(headers, body):
-        return {
+    router = Router([
+        ('GET', '/metrics', lambda headers, body: {
             'status': '200 OK',
             'content': '\r\n'.join(registry.print()),
-        }
-
-    router = Router([
-        ('GET', '/metrics', prom_handler),
+        }),
     ])
     server = False
 
