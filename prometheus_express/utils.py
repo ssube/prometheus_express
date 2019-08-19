@@ -16,14 +16,6 @@ def check_network(eth):
     return True
 
 
-def bind_server(eth):
-    ip_addr = eth.ifconfig()[0]
-    ip_port = 8080
-
-    print('Binding: {}:{}'.format(ip_addr, ip_port))
-    return (start_http_server(ip_port, address=ip_addr), True)
-
-
 def scan_i2c_bus(i2c):
     while not i2c.try_lock():
         pass

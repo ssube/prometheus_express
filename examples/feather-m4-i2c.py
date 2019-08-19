@@ -3,7 +3,7 @@ from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
-from prometheus_express.utils import bind_server, check_network, scan_i2c_bus
+from prometheus_express.utils import check_network, scan_i2c_bus
 
 # system
 import board
@@ -39,19 +39,20 @@ spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 eth = wiznet.WIZNET5K(spi, board.D10, board.D11)
 eth.dhcp = True
 
+try:
+    eth.config(dhcp_hostname='prometheus_express_m4')
+except AttributeError as err:
+    print('Error setting hostname:', err)
+
 # initialize the LEDs
 led = digitalio.DigitalInOut(board.D13)
 led.direction = digitalio.Direction.OUTPUT
 
 rgb = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
 
-time.sleep(0.5)
-led.value = check_network(eth)
-
 
 def main():
     ready = False
-    bound = False
 
     registry = CollectorRegistry(namespace='prom_express')
     metric_gas = Gauge('gas',
@@ -78,8 +79,8 @@ def main():
         led.value = ready
 
     rgb[0] = BLUE  # connected
-    while not bound:
-        server, bound = bind_server(eth)
+    while not server:
+        server = start_http_server(8080, address=eth.ifconfig()[0])
 
     rgb[0] = GREEN  # ready
     while True:
@@ -94,7 +95,7 @@ def main():
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server, bound = bind_server(eth)
+            server = start_http_server(8080, address=eth.ifconfig()[0])
         except Exception as err:
             print('Unknown error: {}'.format(err))
 

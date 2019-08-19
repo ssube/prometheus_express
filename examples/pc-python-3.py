@@ -5,7 +5,7 @@ from prometheus_express.metric import Counter, Gauge, Summary
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
-from prometheus_express.utils import bind_server, check_network
+from prometheus_express.utils import check_network
 
 # system
 import random
@@ -60,8 +60,8 @@ def main():
         ready = check_network(eth)
 
     rgb[0] = BLUE  # connected
-    while not bound:
-        server, bound = bind_server(eth)
+    while not server:
+        server = start_http_server(8080, address=eth.ifconfig()[0])
 
     rgb[0] = GREEN  # ready
     while True:
@@ -75,7 +75,7 @@ def main():
             pass
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server, bound = bind_server(eth)
+            server = start_http_server(8080, address=eth.ifconfig()[0])
 
 
 main()

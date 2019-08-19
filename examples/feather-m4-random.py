@@ -3,7 +3,7 @@ from prometheus_express.metric import Counter, Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
-from prometheus_express.utils import bind_server, check_network
+from prometheus_express.utils import check_network
 
 # system
 import board
@@ -40,7 +40,6 @@ led.value = check_network(eth)
 
 def main():
     ready = False
-    bound = False
 
     registry = CollectorRegistry(namespace='prom_express')
     metric_c = Counter('test_counter',
@@ -67,8 +66,8 @@ def main():
         led.value = ready
 
     rgb[0] = BLUE  # connected
-    while not bound:
-        server, bound = bind_server(eth)
+    while not server:
+        server = start_http_server(8080, address=eth.ifconfig()[0])
 
     rgb[0] = GREEN  # ready
     while True:
@@ -78,7 +77,7 @@ def main():
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server, bound = bind_server(eth)
+            server = start_http_server(8080, address=eth.ifconfig()[0])
 
 
 main()
