@@ -8,7 +8,29 @@ into existing Prometheus/Grafana monitoring infrastructure.
 - runs on CPython 3.x for local testing
 - API compatible with the official [prometheus/client_python](https://github.com/prometheus/client_python)
 - basic HTTP server with path/method routing
-- not terribly slow (`wrk` reports upwards of 100rps with 2 metrics)
+- not terribly slow (`wrk` reports upwards of 10 rps with routing)
+
+For those unfamiliar with Prometheus, the examples expose an HTTP server on port `:8080` that reports metrics in a
+plaintext format:
+
+```
+# HELP prom_express_gas gas from the bme680 sensor
+# TYPE prom_express_gas gauge
+prom_express_gas 1060948
+# HELP prom_express_humidity humidity from both sensors
+# TYPE prom_express_humidity gauge
+prom_express_humidity{sensor="None"} 0
+prom_express_humidity{sensor="bme680"} 49.4062
+prom_express_humidity{sensor="si7021"} 49.7976
+# HELP prom_express_pressure pressure from the bme680 sensor
+# TYPE prom_express_pressure gauge
+prom_express_pressure 983.25
+# HELP prom_express_temperature temperature from both sensors
+# TYPE prom_express_temperature gauge
+prom_express_temperature{sensor="None"} 0
+prom_express_temperature{sensor="bme680"} 24.7359
+prom_express_temperature{sensor="si7021"} 24.3325
+```
 
 ## Contents
 
