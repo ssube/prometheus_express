@@ -5,7 +5,7 @@ from prometheus_express.metric import Counter, Gauge, Summary
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
-from prometheus_express.utils import check_network
+from prometheus_express.utils import check_network, CPythonNetwork
 
 # system
 import random
@@ -18,23 +18,10 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 rgb = [()]
-
-
-class MockNetwork():
-    connected = True
-
-    def ifconfig(self):
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        return (ip_addr, 0, 0, 0)
-
-
-eth = MockNetwork()
-
+eth = CPythonNetwork(socket)
 
 def main():
     ready = False
-    bound = False
 
     registry = CollectorRegistry(namespace='prom_express')
     metric_t = Counter('si7021_temperature',
@@ -47,7 +34,7 @@ def main():
     def prom_handler(headers, body):
         return {
             'status': '200 OK',
-            'content': '\r\n'.join(registry.print()),
+            'content': '\r\n'.join(registry.render()),
         }
 
     router = Router([

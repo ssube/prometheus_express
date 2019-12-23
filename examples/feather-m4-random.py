@@ -55,7 +55,7 @@ def main():
         }),
         ('GET', '/metrics', lambda headers, body: {
             'status': '200 OK',
-            'content': '\r\n'.join(registry.print()),
+            'content': '\r\n'.join(registry.render()),
         }),
     ])
     server = False

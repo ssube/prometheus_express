@@ -22,3 +22,15 @@ def scan_i2c_bus(i2c):
     ])
 
     i2c.unlock()
+    return True
+
+class CPythonNetwork(object):
+    connected = True
+
+    def __init__(self, socket):
+        self.socket = socket
+
+    def ifconfig(self):
+        hostname = self.socket.gethostname()
+        ip_addr = self.socket.gethostbyname(hostname)
+        return (ip_addr, 0, 0, 0)
