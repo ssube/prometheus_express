@@ -15,10 +15,10 @@ class CollectorRegistry():
         self.metrics.add(metric)
         return True
 
-    def print(self):
+    def render(self):
         metrics = []
         for m in self.metrics:
-            line = m.print(self.namespace)
+            line = m.render(self.namespace)
             metrics.extend(line)
 
         return metrics

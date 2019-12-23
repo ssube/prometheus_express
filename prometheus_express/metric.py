@@ -1,11 +1,11 @@
-def print_help(name, desc, type):
+def render_help(name, desc, type):
     return [
         '# HELP {} {}'.format(name, desc),
         '# TYPE {} {}'.format(name, type),
     ]
 
 
-def print_labels(keys, values):
+def render_labels(keys, values):
     if len(keys) != len(values):
         raise ValueError('length of label values must equal label keys')
 
@@ -19,7 +19,7 @@ def print_labels(keys, values):
     return '{' + ','.join(labels) + '}'
 
 
-def print_name(namespace, name):
+def render_name(namespace, name):
     if namespace != '':
         return '{}_{}'.format(namespace, name)
     else:
@@ -53,8 +53,8 @@ class Metric():
         self.labelValues = labelValues
         return self
 
-    def print(self, namespace):
-        return print_help(print_name(namespace, self.name), self.desc, self.metricType)
+    def render(self, namespace):
+        return render_help(render_name(namespace, self.name), self.desc, self.metricType)
 
 
 class Counter(Metric):
@@ -76,11 +76,11 @@ class Counter(Metric):
 
         self.labelValues = self.emptyLabels
 
-    def print(self, namespace):
-        lines = super().print(namespace)
+    def render(self, namespace):
+        lines = super().render(namespace)
         for l, v in self.values.items():
-            lines.append('{}{} {}'.format(print_name(
-                namespace, self.name), print_labels(self.labelKeys, l), v))
+            lines.append('{}{} {}'.format(render_name(
+                namespace, self.name), render_labels(self.labelKeys, l), v))
 
         return lines
 
@@ -109,14 +109,16 @@ class Summary(Metric):
         else:
             self.values[self.labelValues] = (1, value)
 
-    def print(self, namespace):
-        nn = print_name(namespace, self.name)
-        lines = super().print(namespace)
+        self.labelValues = self.emptyLabels
+
+    def render(self, namespace):
+        nn = render_name(namespace, self.name)
+        lines = super().render(namespace)
         for l, v in self.values.items():
-            ll = print_labels(self.labelKeys, l)
-            lines.extend(print_help(nn + '_count', self.desc, self.metricType))
+            ll = render_labels(self.labelKeys, l)
+            lines.extend(render_help(nn + '_count', self.desc, self.metricType))
             lines.append('{}_count{} {}'.format(nn, ll, v[0]))
-            lines.extend(print_help(nn + '_total', self.desc, self.metricType))
+            lines.extend(render_help(nn + '_total', self.desc, self.metricType))
             lines.append('{}_total{} {}'.format(nn, ll, v[1]))
 
         return lines
