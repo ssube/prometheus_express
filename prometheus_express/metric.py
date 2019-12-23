@@ -66,12 +66,15 @@ class Counter(Metric):
         else:
             self.values[self.labelValues] = value
 
+        self.labelValues = self.emptyLabels
+
     def dec(self, value):
         if self.labelValues in self.values:
             self.values[self.labelValues] -= value
         else:
             self.values[self.labelValues] = value
 
+        self.labelValues = self.emptyLabels
 
     def print(self, namespace):
         lines = super().print(namespace)
@@ -87,6 +90,7 @@ class Gauge(Counter):
 
     def set(self, value):
         self.values[self.labelValues] = value
+        self.labelValues = self.emptyLabels
 
 
 class Summary(Metric):
