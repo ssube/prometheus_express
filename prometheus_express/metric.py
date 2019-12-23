@@ -25,8 +25,32 @@ def render_name(namespace, name):
     else:
         return name
 
+'''
+Validate a single character. This avoids importing regex on the Express platform.
+From https://github.com/prometheus/common/blob/master/model/metric.go#L97
+'''
+def validate_name_char(c, num):
+    return (
+        (c >= 'a' and c <= 'z') or # lowercase alpha
+        (c >= 'A' and c <= 'Z') or # uppercase alpha
+        (num and (c >= '0' and c <= '9')) or # numeric
+        c == '_' or
+        c == ':')
 
-# base class for metric types
+'''
+Validate a metric or label name without using regular expressions.
+'''
+def validate_name(name):
+    head = name[0]
+    tail = name[1:]
+
+    return validate_name_char(head, False) and all(
+        validate_name_char(c, True) for c in tail
+    )
+
+'''
+Base class for typed metrics
+'''
 class Metric(object):
     name = ''
     desc = ''
@@ -34,6 +58,11 @@ class Metric(object):
     metricType = 'untyped'
 
     def __init__(self, name, desc, labels=[], registry=False):
+        if not validate_name(name):
+            raise ValueError('metric name is not valid')
+        if not all(validate_name(n) for n in labels):
+            raise ValueError('label names are not valid')
+
         self.name = name
         self.desc = desc
         self.labelKeys = labels
@@ -49,7 +78,6 @@ class Metric(object):
 
     # TODO: fluent API for labeling metrics
     def labels(self, *labelValues):
-        #labels = populate_labels(self.labelKeys, labelValues)
         self.labelValues = labelValues
         return self
 

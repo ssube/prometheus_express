@@ -26,10 +26,25 @@ class RenderNameTest(unittest.TestCase):
       pm.render_name('foo', 'bar')
     )
 
+class ValidateNameTest(unittest.TestCase):
+  def test(self):
+    self.assertEqual(pm.validate_name('foo_bar'), True)
+    self.assertEqual(pm.validate_name('123_bar'), False)
+    self.assertEqual(pm.validate_name('no!good?'), False)
+
+class MetricNameTest(unittest.TestCase):
+  def test_numeric(self):
+    with self.assertRaises(ValueError):
+      pm.Metric('123_bar', 'invalid name')
+
+  def test_special(self):
+    with self.assertRaises(ValueError):
+      pm.Metric('no!good?', 'invalid name')
+
 class MetricRenderTest(unittest.TestCase):
   def test(self):
     m = pm.Metric('bin', 'bin values', [
-      'key-1', 'key-2',
+      'key_1', 'key_2',
     ])
     m.labels('value-1', 'value-2')
 
@@ -43,7 +58,7 @@ class MetricRenderTest(unittest.TestCase):
 class CounterRenderTest(unittest.TestCase):
   def test(self):
     m = pm.Counter('bin', 'bin values', [
-      'key-1', 'key-2',
+      'key_1', 'key_2',
     ])
     m.labels('value-1', 'value-2')
     m.inc(90)
@@ -52,6 +67,6 @@ class CounterRenderTest(unittest.TestCase):
     self.assertEqual([
       '# HELP foo_bin bin values',
       '# TYPE foo_bin counter',
-      'foo_bin{key-1="value-1",key-2="value-2"} 90',
-      'foo_bin{key-1="None",key-2="None"} 0',
+      'foo_bin{key_1="value-1",key_2="value-2"} 90',
+      'foo_bin{key_1="None",key_2="None"} 0',
     ], r)
