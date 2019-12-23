@@ -13,7 +13,7 @@ into existing Prometheus/Grafana monitoring infrastructure.
 For those unfamiliar with Prometheus, the examples expose an HTTP server on port `:8080` that reports metrics in a
 plaintext format:
 
-```
+```none
 # HELP prom_express_gas gas from the bme680 sensor
 # TYPE prom_express_gas gauge
 prom_express_gas 1060948
@@ -67,7 +67,7 @@ Labels are not yet implemented.
 
 ### Metric Types
 
-`Counter`, `Gauge`, and `Summary` are implemented. Labels are not (yet).
+`Counter`, `Gauge`, and `Summary` are implemented with labels.
 
 #### Counter
 
@@ -85,10 +85,10 @@ Prints count and total of `observe(value)`.
 
 Registries may be created with a namespace: `CollectorRegistry(namespace='foo')`
 
-Call `registry.print()` to format metrics in Prometheus'
+Call `registry.render()` to format metrics in Prometheus'
 [plain text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/#text-based-format):
 
-```
+```none
 # HELP prom_express_test_counter a test counter
 # TYPE prom_express_test_counter counter
 prom_express_test_counter 1588
@@ -101,8 +101,8 @@ Metrics may be registered with multiple registries.
 
 ## Planned Features
 
-- `push_to_gateway`
-- remaining metric types (Histogram, Summary)
+- push support: `push_to_gateway`
+- remaining metric types: `Histogram`
 
 ## Known Issues
 

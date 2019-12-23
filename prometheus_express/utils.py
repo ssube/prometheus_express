@@ -1,6 +1,3 @@
-from prometheus_express.server import start_http_server
-
-
 def check_network(eth):
     online = eth.connected
     network = eth.ifconfig()

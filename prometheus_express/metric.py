@@ -27,7 +27,7 @@ def render_name(namespace, name):
 
 
 # base class for metric types
-class Metric():
+class Metric(object):
     name = ''
     desc = ''
     labelKeys = []
@@ -77,7 +77,7 @@ class Counter(Metric):
         self.labelValues = self.emptyLabels
 
     def render(self, namespace):
-        lines = super().render(namespace)
+        lines = super(Counter, self).render(namespace)
         for l, v in self.values.items():
             lines.append('{}{} {}'.format(render_name(
                 namespace, self.name), render_labels(self.labelKeys, l), v))
@@ -113,7 +113,7 @@ class Summary(Metric):
 
     def render(self, namespace):
         nn = render_name(namespace, self.name)
-        lines = super().render(namespace)
+        lines = super(Summary, self).render(namespace)
         for l, v in self.values.items():
             ll = render_labels(self.labelKeys, l)
             lines.extend(render_help(nn + '_count', self.desc, self.metricType))
