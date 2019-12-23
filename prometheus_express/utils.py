@@ -13,9 +13,15 @@ def check_network(eth):
     return True
 
 
-def scan_i2c_bus(i2c):
+def scan_i2c_bus(i2c, timeout=10):
+    attempt=0
+
     while not i2c.try_lock():
-        pass
+        if attempt < timeout:
+            attempt += 1
+            pass
+        else:
+            return False
 
     print('I2C devices:', [
         hex(x) for x in i2c.scan()
