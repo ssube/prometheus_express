@@ -12,6 +12,17 @@ import random
 import socket
 import time
 
+class CPythonNetwork():
+    connected = True
+
+    def __init__(self, socket):
+        self.socket = socket
+
+    def ifconfig(self):
+        hostname = self.socket.gethostname()
+        ip_addr = self.socket.gethostbyname(hostname)
+        return (ip_addr, 0, 0, 0)
+
 # colors
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
