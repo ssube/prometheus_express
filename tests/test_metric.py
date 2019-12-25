@@ -67,6 +67,11 @@ class CounterRenderTest(unittest.TestCase):
     self.assertEqual([
       '# HELP foo_bin bin values',
       '# TYPE foo_bin counter',
-      'foo_bin{key_1="value-1",key_2="value-2"} 90',
+    ], r[:2])
+
+    v = r[2:]
+    v.sort()
+    self.assertEqual([
       'foo_bin{key_1="None",key_2="None"} 0',
-    ], r)
+      'foo_bin{key_1="value-1",key_2="value-2"} 90',
+    ], v)
