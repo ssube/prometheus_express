@@ -9,3 +9,13 @@ class RegistryTest(unittest.TestCase):
     r.register(m)
     r.register(m)
     self.assertEqual(r.metrics, set([m]))
+
+  def test_render(self):
+    r = pr.CollectorRegistry()
+    pm.Metric('foo', 'foo counts', registry=r)
+
+    lines = r.render()
+    self.assertEquals(lines, [
+      '# HELP foo foo counts',
+      '# TYPE foo untyped',
+    ])

@@ -36,8 +36,11 @@ clean-coverage:
 clean-package:
 	rm -rf dist
 
-test:
+test: test-unit
+
+test-unit:
 	coverage run -m unittest discover -s tests/
+	coverage html
 
 package: clean-package package-dist package-upload
 

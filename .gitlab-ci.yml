@@ -13,7 +13,6 @@ test-python:
   script:
     - pip install coverage
     - make test
-    - coverage html
   artifacts:
     expire_in: 7 days
     paths:

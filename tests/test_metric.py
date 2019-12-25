@@ -9,7 +9,7 @@ class RenderHelpTest(unittest.TestCase):
     ], pm.render_help('foo', 'bar', 'bin'))
 
 class RenderLabelsTest(unittest.TestCase):
-  def test(self):
+  def test_render(self):
     self.assertEqual(
       '{foo="bar",bin="baz"}',
       pm.render_labels([
@@ -18,6 +18,17 @@ class RenderLabelsTest(unittest.TestCase):
         'bar', 'baz',
       ])
     )
+
+  def test_uneven(self):
+    with self.assertRaises(ValueError):
+      pm.render_labels([
+        'key-1', 'key-2',
+      ], [
+        'value-1',
+      ])
+
+  def test_empty(self):
+    self.assertEqual('', pm.render_labels([], []))
 
 class RenderNameTest(unittest.TestCase):
   def test(self):
