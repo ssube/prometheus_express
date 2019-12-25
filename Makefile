@@ -41,6 +41,7 @@ test: test-unit
 test-unit:
 	coverage run -m unittest discover -s tests/
 	coverage html
+	coverage xml
 
 package: clean-package package-dist package-upload
 
