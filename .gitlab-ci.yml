@@ -1,3 +1,6 @@
+includes:
+  - local: /.gitlab/tools.yml
+
 stages:
   - pre
   - test
