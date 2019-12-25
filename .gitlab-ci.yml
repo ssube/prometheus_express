@@ -2,9 +2,9 @@ include:
   - local: /.gitlab/tools.yml
 
 stages:
-  - pre
+  - status-pre
   - test
-  - post
+  - status-post
 
 test-python:
   extends:
@@ -17,3 +17,56 @@ test-python:
     expire_in: 7 days
     paths:
       - htmlcov/
+
+# commit status
+climate-pending:
+  stage: status-pre
+  extends:
+    - .build-climate
+
+  script:
+    - cc-test-reporter before-build
+
+climate-success:
+  stage: status-post
+  extends:
+    - .build-climate
+
+  dependencies:
+    - build-node
+  script:
+    - make upload-climate
+
+codecov-success:
+  stage: status-post
+  extends:
+    - .build-codecov
+
+  when: on_success
+  dependencies:
+    - build-node
+  script:
+    - make upload-codecov
+
+github-pending:
+  stage: status-pre
+  extends:
+    - .build-curl
+  script:
+    - ./scripts/github-status.sh pending
+
+github-failure:
+  stage: status-post
+  extends:
+    - .build-curl
+  when: on_failure
+  script:
+    - ./scripts/github-status.sh failure
+
+github-success:
+  stage: status-post
+  extends:
+    - .build-curl
+  when: on_success
+  script:
+    - ./scripts/github-status.sh success
