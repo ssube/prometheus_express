@@ -8,7 +8,7 @@ stages:
 
 test-python:
   extends:
-    - .test-python
+    - .build-python
   stage: test
   script:
     - make test
