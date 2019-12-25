@@ -3,13 +3,13 @@ include:
 
 stages:
   - status-pre
-  - test
+  - build
   - status-post
 
-test-python:
+build-python:
   extends:
     - .build-python
-  stage: test
+  stage: build
   script:
     - pip install coverage
     - make test
@@ -33,7 +33,7 @@ climate-success:
     - .build-climate
 
   dependencies:
-    - build-node
+    - build-python
   script:
     - make upload-climate
 
@@ -44,7 +44,7 @@ codecov-success:
 
   when: on_success
   dependencies:
-    - build-node
+    - build-python
   script:
     - make upload-codecov
 
