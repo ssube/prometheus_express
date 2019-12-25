@@ -1,0 +1,71 @@
+.shared-runner:
+  tags:
+    - platform:k8s
+    - runner:shared
+
+.build-curl:
+  extends:
+    - .shared-runner
+  image: apextoaster/base:1.2
+
+.build-climate:
+  extends:
+    - .shared-runner
+  image: apextoaster/code-climate:0.6
+  allow_failure: false
+  variables:
+    CI_BRANCH: "${CI_COMMIT_REF_NAME}"
+    GIT_BRANCH: "${CI_COMMIT_REF_NAME}"
+    GIT_COMMIT_SHA: "${CI_COMMIT_SHA}"
+
+.build-codecov:
+  extends:
+    - .shared-runner
+  image: apextoaster/codecov:3.1
+  allow_failure: false
+
+.build-docker:
+  extends:
+    - .shared-runner
+  image: apextoaster/docker:18.09
+  services:
+    - apextoaster/docker-dind:18.09
+  allow_failure: false
+
+  before_script:
+    - mkdir ${HOME}/.docker
+    - echo "${DOCKER_SECRET}" | base64 -d > ${HOME}/.docker/config.json
+  script:
+    - ${CI_PROJECT_DIR}/scripts/docker-build.sh --push
+  after_script:
+    - rm -rfv ${HOME}/.docker
+
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://localhost:2375
+
+.build-go:
+  extends:
+    - .shared-runner
+  image: golang:1.13
+  allow_failure: false
+
+.build-node:
+  extends:
+    - .shared-runner
+  image: apextoaster/node:11.15
+  allow_failure: false
+
+  before_script:
+    - echo "${NPM_SECRET}" | base64 -d > ${HOME}/.npmrc
+
+.build-python:
+  extends:
+    - .shared-runner
+  image: python:3.7
+
+.build-sonar:
+  extends:
+    - .shared-runner
+  image: apextoaster/sonar-scanner:3.3
+  allow_failure: false

@@ -1,7 +1,10 @@
-test:
-	python -m unittest discover -s tests/
+clean-package:
+	rm -rf dist
 
-package: package-dist package-upload
+test:
+	coverage run -m unittest discover -s tests/
+
+package: clean-package package-dist package-upload
 
 package-dist:
 	python ./setup.py sdist

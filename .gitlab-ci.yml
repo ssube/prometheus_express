@@ -1,0 +1,11 @@
+stages:
+  - pre
+  - test
+  - post
+
+test-python:
+  extends:
+    - .test-python
+  stage: test
+  script:
+    - make test

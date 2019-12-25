@@ -49,12 +49,12 @@ class CheckNetworkTest(unittest.TestCase):
 class ScanI2CBusTest(unittest.TestCase):
   def test_unlocked(self):
     self.assertEqual(
-      pu.scan_i2c_bus(MockI2C()),
+      pu.scan_i2c_bus(MockI2C(), 10),
       True,
     )
 
   def test_locked(self):
     self.assertEqual(
-      pu.scan_i2c_bus(MockI2C(locked=True)),
+      pu.scan_i2c_bus(MockI2C(locked=True), 10),
       False,
     )

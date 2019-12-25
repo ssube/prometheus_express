@@ -1,4 +1,7 @@
+.coverage/
+.vscode/
 dist/
+htmlcov/
 
 *.swp
 *.pyc

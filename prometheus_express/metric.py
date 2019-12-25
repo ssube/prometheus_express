@@ -76,7 +76,6 @@ class Metric(object):
         if registry != False:
             registry.register(self)
 
-    # TODO: fluent API for labeling metrics
     def labels(self, *labelValues):
         self.labelValues = labelValues
         return self
