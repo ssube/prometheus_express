@@ -9,6 +9,7 @@ export GIT_TAG ?= $(shell git tag -l --points-at HEAD | head -1)
 # resolve the makefile's path and directory, from https://stackoverflow.com/a/18137056
 export MAKE_PATH		?= $(abspath $(lastword $(MAKEFILE_LIST)))
 export ROOT_PATH		?= $(dir $(MAKE_PATH))
+export SCRIPT_PATH 	?= $(ROOT_PATH)/scripts
 
 # CI
 export CI_COMMIT_REF_SLUG ?= $(GIT_BRANCH)
