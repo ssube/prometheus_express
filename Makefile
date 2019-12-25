@@ -55,7 +55,7 @@ upload-climate:
 	cc-test-reporter after-build --debug -r "$(shell echo "${CODECLIMATE_SECRET}" | base64 -d)"
 
 upload-codecov:
-	codecov --token=$(shell echo "${CODECOV_SECRET}" | base64 -d)
+	codecov --disable=gcov --token=$(shell echo "${CODECOV_SECRET}" | base64 -d)
 
 # from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## print this help

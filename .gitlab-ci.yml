@@ -16,6 +16,8 @@ build-python:
   artifacts:
     expire_in: 7 days
     paths:
+      - .coverage
+      - coverage.xml
       - htmlcov/
 
 # commit status

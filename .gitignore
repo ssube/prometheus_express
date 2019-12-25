@@ -3,6 +3,8 @@
 dist/
 htmlcov/
 
+coverage.xml
+
 *.swp
 *.pyc
 
