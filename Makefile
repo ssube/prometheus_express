@@ -74,8 +74,8 @@ git-stats: ## print git contributor line counts (approx, for fun)
 		grep -I '^author '; done | sort -f | uniq -ic | sort -n
 
 release: ## create a release
-	$(NODE_BIN)/standard-version --sign $(RELEASE_OPTS)
+	standard-version --sign $(RELEASE_OPTS)
 	GIT_OPTIONS=--tags $(MAKE) git-push
 
 release-dry: ## test creating a release
-	$(NODE_BIN)/standard-version --sign $(RELEASE_OPTS) --dry-run
+	standard-version --sign $(RELEASE_OPTS) --dry-run

@@ -36,6 +36,8 @@ prom_express_temperature{sensor="si7021"} 24.3325
 
 - [prometheus_express](#prometheusexpress)
   - [Contents](#contents)
+  - [Status](#status)
+  - [Releases](#releases)
   - [Supported Hardware](#supported-hardware)
   - [Supported Features](#supported-features)
     - [HTTP](#http)
@@ -48,6 +50,24 @@ prom_express_temperature{sensor="si7021"} 24.3325
   - [Planned Features](#planned-features)
   - [Known Issues](#known-issues)
     - [Load Causes OSError](#load-causes-oserror)
+
+## Status
+
+[![Pipeline Status](https://git.apextoaster.com/ssube/prometheus_express/badges/master/pipeline.svg)](https://git.apextoaster.com/ssube/prometheus_express/commits/master)
+[![Test Coverage](https://codecov.io/gh/ssube/prometheus_express/branch/master/graph/badge.svg)](https://codecov.io/gh/ssube/prometheus_express)
+[![MIT license](https://img.shields.io/github/license/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/blob/master/LICENSE.md)
+
+[![Open bug count](https://img.shields.io/github/issues-raw/ssube/prometheus_express/type-bug.svg)](https://github.com/ssube/prometheus_express/issues?q=is%3Aopen+is%3Aissue+label%3Atype%2Fbug)
+[![Open issue count](https://img.shields.io/github/issues-raw/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/issues?q=is%3Aopen+is%3Aissue)
+[![Closed issue count](https://img.shields.io/github/issues-closed-raw/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/issues?q=is%3Aissue+is%3Aclosed)
+
+## Releases
+
+[![github release link](https://img.shields.io/badge/github-release-blue?logo=github)](https://github.com/ssube/prometheus_express/releases)
+[![github release version](https://img.shields.io/github/tag/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/releases)
+[![github commits since release](https://img.shields.io/github/commits-since/ssube/prometheus_express/v0.0.3.svg)](https://github.com/ssube/prometheus_express/compare/v0.0.3...master)
+
+![PyPI](https://img.shields.io/pypi/v/prometheus_express?color=green)
 
 ## Supported Hardware
 
