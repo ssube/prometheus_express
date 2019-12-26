@@ -2,6 +2,8 @@ import socket
 
 http_break = '\r\n'
 http_encoding = 'utf-8'
+http_default_status = '200 OK'
+http_default_type = 'text/plain'
 
 
 def start_http_server(port, address='0.0.0.0', depth=2, timeout=5.0):
@@ -36,13 +38,16 @@ class Server():
         handler = router.select(req_headers['method'], req_headers['path'])
         resp = handler(req_headers, req_body)
 
-        if 'type' in resp:
-            return self.send_response(conn, resp['status'],
-                                      resp['content'], type=resp['type'])
-        else:
-            return self.send_response(conn, resp['status'], resp['content'])
+        if 'type' not in resp:
+            resp['type'] = http_default_type
 
-    def send_response(self, conn, status, body, type='text/plain'):
+        return self.send_response(
+            conn,
+            resp['status'],
+            resp['content'],
+            type=resp['type'])
+
+    def send_response(self, conn, status, body, type):
         content_data = body.encode(http_encoding)
         content_length = len(content_data)
 
@@ -62,7 +67,7 @@ class Server():
         except OSError as err:
             print('Error sending response: {}'.format(err))
 
-    def format_headers(self, status='200 OK', type='text/plain', length=0):
+    def format_headers(self, status, type, length=0):
         return [
             'HTTP/1.1 {}'.format(status),
             'Connection: close',
