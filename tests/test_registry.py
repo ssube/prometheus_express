@@ -15,7 +15,7 @@ class RegistryTest(unittest.TestCase):
     pm.Metric('foo', 'foo counts', registry=r)
 
     lines = r.render()
-    self.assertEquals(lines, [
+    self.assertEqual(lines, [
       '# HELP foo foo counts',
       '# TYPE foo untyped',
     ])

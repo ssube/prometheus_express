@@ -14,7 +14,7 @@ class MockConnection(object):
     print('recv', n)
     self.buffer = self.body[self.index : self.index + n]
     self.index += n
-    return self.buffer
+    return self.buffer.encode('utf-8')
 
   def send(self, chunk):
     self.accum.append(chunk)
