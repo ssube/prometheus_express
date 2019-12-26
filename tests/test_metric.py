@@ -43,14 +43,22 @@ class ValidateNameTest(unittest.TestCase):
     self.assertEqual(pm.validate_name('123_bar'), False)
     self.assertEqual(pm.validate_name('no!good?'), False)
 
-class MetricNameTest(unittest.TestCase):
-  def test_numeric(self):
+class ValidateMetricTest(unittest.TestCase):
+  def test_name_numeric(self):
     with self.assertRaises(ValueError):
       pm.Metric('123_bar', 'invalid name')
 
-  def test_special(self):
+  def test_name_special(self):
     with self.assertRaises(ValueError):
       pm.Metric('no!good?', 'invalid name')
+
+  def test_label_numeric(self):
+    with self.assertRaises(ValueError):
+      pm.Metric('valid', 'also valid', ['123_bar'])
+
+  def test_label_special(self):
+    with self.assertRaises(ValueError):
+      pm.Metric('valid', 'also valid', ['no!good?'])
 
 class MetricRenderTest(unittest.TestCase):
   def test(self):

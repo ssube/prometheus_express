@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.3",
     author="Sean Sube",
     author_email="seansube@gmail.com",
-    description="Prometheus client/server for CircuitPython Express ARM devices",
+    description="Prometheus SDK for CircuitPython Express ARM devices",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ssube/prometheus_express",

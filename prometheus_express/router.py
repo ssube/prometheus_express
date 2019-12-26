@@ -12,7 +12,7 @@ class Router():
         self.routes = routes
 
     def register(self, method, path, handler):
-        self.routes.add((method, path, handler))
+        self.routes.append((method, path, handler))
 
     def select(self, method, path):
         for r in self.routes:
