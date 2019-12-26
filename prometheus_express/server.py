@@ -77,6 +77,9 @@ class Server():
         lines = req.split(http_break)
         start = lines[0].split(' ')
 
+        if len(start) < 3:
+            raise ValueError('request does not have all HTTP components')
+
         return ({
             'method': start[0],
             'path': start[1],
