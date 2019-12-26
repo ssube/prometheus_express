@@ -17,9 +17,9 @@ def scan_i2c_bus(bus, timeout):
     while not bus.try_lock():
         if attempt < timeout:
             attempt += 1
-            pass
         else:
             return False
+
     print('I2C devices:', [
         hex(x) for x in bus.scan()
     ])

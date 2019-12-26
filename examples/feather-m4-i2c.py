@@ -1,5 +1,5 @@
 # custom
-from prometheus_express.metric import Counter, Gauge
+from prometheus_express.metric import Gauge
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server
@@ -9,7 +9,6 @@ from prometheus_express.utils import check_network, scan_i2c_bus
 import board
 import busio
 import digitalio
-import socket
 import time
 
 # hardware
@@ -25,7 +24,7 @@ BLUE = (0, 0, 255)
 
 # set up and scan i2c bus
 i2c = busio.I2C(board.SCL, board.SDA)
-scan_i2c_bus(i2c)
+scan_i2c_bus(i2c, 10)
 
 # set up sensors
 sensor_bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c)

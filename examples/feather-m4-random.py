@@ -10,7 +10,6 @@ import board
 import busio
 import digitalio
 import random
-import socket
 import time
 
 # hardware

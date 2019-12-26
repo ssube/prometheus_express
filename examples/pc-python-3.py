@@ -10,7 +10,6 @@ from prometheus_express.utils import check_network
 # system
 import random
 import socket
-import time
 
 class CPythonNetwork():
     connected = True

@@ -61,6 +61,12 @@ prom_express_temperature{sensor="si7021"} 24.3325
 [![Open issue count](https://img.shields.io/github/issues-raw/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/issues?q=is%3Aopen+is%3Aissue)
 [![Closed issue count](https://img.shields.io/github/issues-closed-raw/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/issues?q=is%3Aissue+is%3Aclosed)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/0b84df4baf76afa1b4c4/maintainability)](https://codeclimate.com/github/ssube/prometheus_express/maintainability)
+[![Technical debt ratio](https://img.shields.io/codeclimate/tech-debt/ssube/prometheus_express)](https://codeclimate.com/github/ssube/prometheus_express/trends/technical_debt)
+[![Quality issues](https://img.shields.io/codeclimate/issues/ssube/prometheus_express)](https://codeclimate.com/github/ssube/prometheus_express/issues)
+[![LGTM Language grade: Python](https://img.shields.io/lgtm/grade/python/g/ssube/prometheus_express.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ssube/prometheus_express/context:python)
+[![LGTM Total alerts](https://img.shields.io/lgtm/alerts/g/ssube/prometheus_express.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ssube/prometheus_express/alerts/)
+
 ## Releases
 
 [![github release link](https://img.shields.io/badge/github-release-blue?logo=github)](https://github.com/ssube/prometheus_express/releases)
@@ -123,6 +129,7 @@ Metrics may be registered with multiple registries.
 
 - push support: `push_to_gateway`
 - remaining metric types: `Histogram`
+- tests for API compatibility
 
 ## Known Issues
 
