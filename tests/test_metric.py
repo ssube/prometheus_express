@@ -67,7 +67,7 @@ class MetricRenderTest(unittest.TestCase):
     ], r)
 
 class CounterRenderTest(unittest.TestCase):
-  def test(self):
+  def test_simple(self):
     m = pm.Counter('bin', 'bin values', [
       'key_1', 'key_2',
     ])
@@ -85,4 +85,56 @@ class CounterRenderTest(unittest.TestCase):
     self.assertEqual([
       'foo_bin{key_1="None",key_2="None"} 0',
       'foo_bin{key_1="value-1",key_2="value-2"} 90',
+    ], v)
+
+  '''
+  ensure repeated label sets are combined and values
+  are accumulated correctly
+  '''
+  def test_repeat_labels(self):
+    m = pm.Counter('bin', 'bin values', [
+      'key_1', 'key_2',
+    ])
+    m.labels('value-1', 'value-2')
+    m.inc(30)
+
+    m.labels('foo-1', 'foo-2')
+    m.inc(20)
+
+    m.labels('value-1', 'value-2')
+    m.inc(60)
+
+    r = m.render('foo')
+    v = r[2:]
+    v.sort()
+    self.assertEqual([
+      'foo_bin{key_1="None",key_2="None"} 0',
+      'foo_bin{key_1="foo-1",key_2="foo-2"} 20',
+      'foo_bin{key_1="value-1",key_2="value-2"} 90',
+    ], v)
+
+class SummaryRenderTest(unittest.TestCase):
+  def test(self):
+    m = pm.Summary('foo', 'foo values', ['group'])
+    m.labels('foo').observe(4)
+    m.labels('bar').observe(2)
+    m.labels('foo').observe(6)
+    m.labels('bar').observe(8)
+
+    r = m.render('bar')
+    self.assertEqual(len(r), 8, 'should have 2 lines of help and 6 values')
+    self.assertEqual(r[:2], [
+      '# HELP bar_foo foo values',
+      '# TYPE bar_foo summary',
+    ], 'should begin with the help and type lines')
+
+    v = r[2:]
+    v.sort()
+    self.assertEqual([
+      'bar_foo_count{group="None"} 0',
+      'bar_foo_count{group="bar"} 2',
+      'bar_foo_count{group="foo"} 2',
+      'bar_foo_total{group="None"} 0',
+      'bar_foo_total{group="bar"} 10',
+      'bar_foo_total{group="foo"} 10',
     ], v)

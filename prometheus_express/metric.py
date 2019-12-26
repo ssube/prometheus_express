@@ -143,9 +143,7 @@ class Summary(Metric):
         lines = super(Summary, self).render(namespace)
         for l, v in self.values.items():
             ll = render_labels(self.labelKeys, l)
-            lines.extend(render_help(nn + '_count', self.desc, self.metricType))
             lines.append('{}_count{} {}'.format(nn, ll, v[0]))
-            lines.extend(render_help(nn + '_total', self.desc, self.metricType))
             lines.append('{}_total{} {}'.format(nn, ll, v[1]))
 
         return lines

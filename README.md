@@ -83,7 +83,7 @@ with Chrome, curl, and Prometheus itself.
 
 ### Labels
 
-Labels are not yet implemented.
+Labels are stored and used to accumulate values. Missing labels are reported as `None`.
 
 ### Metric Types
 
@@ -99,7 +99,7 @@ Absolute values. Extends [counter](#counter) with `set(value)`.
 
 #### Summary
 
-Prints count and total of `observe(value)`.
+Individual values. Prints count and total of `observe(value)`.
 
 ### Registries
 
@@ -147,7 +147,7 @@ Transfer/sec:     32.60KB
 
 Some are fatal:
 
-```
+```none
 Connection from ('client', 8080)
 Accepting...
 Connection from ('client', 8080)
@@ -165,7 +165,7 @@ OSError: 4
 
 Others require the socket to be rebound:
 
-```
+```none
 Connection from ('client', 8080)
 Accepting...
 Error accepting request: 7
