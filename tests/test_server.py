@@ -14,7 +14,7 @@ class MockConnection(object):
     print('recv', n)
     self.buffer = self.body[self.index : self.index + n]
     self.index += n
-    return self.buffer.encode('utf-8')
+    return self.buffer.encode(ps.http_encoding)
 
   def send(self, chunk):
     self.accum.append(chunk)
@@ -23,7 +23,7 @@ class MockConnection(object):
     self.open = False
 
   def response(self):
-    return ''.join(self.accum)
+    return ''.join([x.decode(ps.http_encoding) for x in self.accum])
 
 class MockSocket(object):
   def __init__(self, addr, body):

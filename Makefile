@@ -36,12 +36,18 @@ clean-coverage:
 clean-package:
 	rm -rf dist
 
-test: test-unit
+test: test-unit-3
 
-test-unit:
-	coverage run -m unittest discover -s tests/
-	coverage html
-	coverage xml
+test-unit-2:
+	PYCMD=python2 $(MAKE) test-unit-N
+
+test-unit-3:
+	PYCMD=python3 $(MAKE) test-unit-N
+
+test-unit-N:
+	${PYCMD} -m coverage run -m unittest discover -s tests/
+	${PYCMD} -m coverage html
+	${PYCMD} -m coverage xml
 
 package: clean-package package-dist package-upload
 
