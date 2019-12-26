@@ -99,7 +99,7 @@ class Counter(Metric):
         if self.labelValues in self.values:
             self.values[self.labelValues] -= value
         else:
-            self.values[self.labelValues] = value
+            self.values[self.labelValues] = 0 - value
 
         self.labelValues = self.emptyLabels
 

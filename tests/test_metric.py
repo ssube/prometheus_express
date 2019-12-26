@@ -121,6 +121,32 @@ class CounterRenderTest(unittest.TestCase):
       'foo_bin{key_1="value-1",key_2="value-2"} 90',
     ], v)
 
+class CounterValueTest(unittest.TestCase):
+  def test_existing(self):
+    c = pm.Counter('foo', 'foo values')
+    c.inc(20)
+    self.assertEqual(c.values[c.emptyLabels], 20)
+    c.dec(10)
+    self.assertEqual(c.values[c.emptyLabels], 10)
+
+  def test_fresh(self):
+    c = pm.Counter('foo', 'foo values', ['bar'])
+    c.labels('bin').dec(30)
+    self.assertEqual(c.values[('bin',)], -30)
+
+class GaugeValueTest(unittest.TestCase):
+  def test_empty(self):
+    g = pm.Gauge('foo', 'foo values')
+    g.inc(90)
+    self.assertEqual(g.values[g.emptyLabels], 90)
+    g.set(40)
+    self.assertEqual(g.values[g.emptyLabels], 40)
+
+  def test_tuple(self):
+    g = pm.Gauge('foo', 'foo values')
+    g.set(100)
+    self.assertEqual(g.values[()], 100)
+
 class SummaryRenderTest(unittest.TestCase):
   def test(self):
     m = pm.Summary('foo', 'foo values', ['group'])
