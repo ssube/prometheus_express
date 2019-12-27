@@ -8,7 +8,7 @@ into existing Prometheus/Grafana monitoring infrastructure.
 - runs on CPython 3.x for local testing
 - API compatible with the official [prometheus/client_python](https://github.com/prometheus/client_python)
 - basic HTTP server with path/method routing
-- not terribly slow (`wrk` reports upwards of 10 rps with routing)
+- not terribly slow (50 rps on an M4 core, 5k on an i7 core)
 
 For those unfamiliar with Prometheus, the examples expose an HTTP server on port `:8080` that reports metrics in a
 plaintext format:
