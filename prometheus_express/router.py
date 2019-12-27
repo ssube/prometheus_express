@@ -4,8 +4,17 @@ def response(content, status='200 OK'):
         'content': content,
     }
 
+
 def errorHandler(headers, body):
     return response('Not Found', '404 Not Found')
+
+
+def validate_route(handler):
+    return (len(handler) == 3 and
+        type(handler[0]) == str and
+        type(handler[1]) == str and
+        callable(handler[2]))
+
 
 class Router():
     def __init__(self):
@@ -22,8 +31,19 @@ class Router():
     def __len__(self):
         return self.routes.__len__()
 
+    def _register(self, route):
+        if validate_route(route):
+            self.routes.append(route)
+        else:
+            raise ValueError('invalid route')
+
     def register(self, method, path, handler):
-        self.routes.append((method, path, handler))
+        route = (method, path, handler)
+        self._register(route)
+
+    def register_all(self, routes):
+        for r in routes:
+            self._register(r)
 
     def select(self, method, path):
         for r in self.routes:
