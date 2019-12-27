@@ -65,6 +65,7 @@ def main():
         metric_c.labels('random').inc(random.randint(0, 50))
         metric_g.labels('clock').set(time.time())
         metric_g.labels('random').set(random.randint(0, 5000))
+
         try:
             server.accept(router)
         except OSError as err:

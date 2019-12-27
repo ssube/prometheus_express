@@ -47,11 +47,6 @@ def main():
                      'a test gauge', registry=registry)
 
     router = Router([
-        ('GET', '/favicon.ico', lambda headers, body: {
-            'status': '200 OK',
-            'type': 'image/png;base64',
-            'content': 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVQI12N8HmPBxMPHxMTDx8TNBwAUNwHSqFS0zAAAAABJRU5ErkJggg==',
-        }),
         ('GET', '/metrics', registry.handler),
     ])
     server = False
@@ -69,6 +64,7 @@ def main():
         rgb[0] = GREEN  # ready
         metric_c.inc(random.randint(0, 50))
         metric_g.set(random.randint(0, 5000))
+
         try:
             server.accept(router)
         except OSError as err:

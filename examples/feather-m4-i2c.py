@@ -74,12 +74,12 @@ def main():
         ready = check_network(eth)
         led.value = ready
 
-    rgb[0] = BLUE  # connected
-    while not server:
-        server = start_http_server(8080, address=eth.ifconfig()[0])
-
-    rgb[0] = GREEN  # ready
     while True:
+        rgb[0] = BLUE  # connected
+        while not server:
+            server = start_http_server(8080, address=eth.ifconfig()[0])
+
+        rgb[0] = GREEN  # ready
         metric_gas.set(sensor_bme680.gas)
         metric_humidity.labels('bme680').set(sensor_bme680.humidity)
         metric_humidity.labels('si7021').set(sensor_si7021.relative_humidity)
@@ -91,9 +91,8 @@ def main():
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server = start_http_server(8080, address=eth.ifconfig()[0])
-        except Exception as err:
-            print('Unknown error: {}'.format(err))
+        except ValueError as err:
+            print('Error parsing request: {}'.format(err))
 
 
 main()

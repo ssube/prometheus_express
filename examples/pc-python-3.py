@@ -60,6 +60,7 @@ def main():
         metric_t.labels(str(random.randint(1, 5))).inc(random.randint(1, 5))
         metric_s.labels(str(random.randint(1, 5))).observe(
             random.randint(0, 15))
+
         try:
             server.accept(router)
         except socket.timeout:
