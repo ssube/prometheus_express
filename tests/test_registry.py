@@ -19,3 +19,14 @@ class RegistryTest(unittest.TestCase):
       '# HELP foo foo counts',
       '# TYPE foo untyped',
     ])
+
+  def test_handler(self):
+    r = pr.CollectorRegistry()
+    pm.Metric('foo', 'foo counts', registry=r)
+
+    self.assertEqual(
+      r.handler([], ''),
+      {
+        'status': '200 OK',
+        'content': '# HELP foo foo counts\n# TYPE foo untyped',
+      })

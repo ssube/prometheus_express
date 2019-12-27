@@ -52,10 +52,7 @@ def main():
             'type': 'image/png;base64',
             'content': 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVQI12N8HmPBxMPHxMTDx8TNBwAUNwHSqFS0zAAAAABJRU5ErkJggg==',
         }),
-        ('GET', '/metrics', lambda headers, body: {
-            'status': '200 OK',
-            'content': '\r\n'.join(registry.render()),
-        }),
+        ('GET', '/metrics', registry.handler),
     ])
     server = False
 

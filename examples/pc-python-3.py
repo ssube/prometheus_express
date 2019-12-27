@@ -41,14 +41,8 @@ def main():
     metric_s = Summary('si7021_random', 'random data', [
                        'random_tag'], registry=registry)
 
-    def prom_handler(headers, body):
-        return {
-            'status': '200 OK',
-            'content': '\r\n'.join(registry.render()),
-        }
-
     router = Router([
-        ('GET', '/metrics', prom_handler),
+        ('GET', '/metrics', registry.handler),
     ])
     server = False
 

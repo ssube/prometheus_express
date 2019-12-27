@@ -64,10 +64,7 @@ def main():
                                'temperature from both sensors', ['sensor'], registry=registry)
 
     router = Router([
-        ('GET', '/metrics', lambda headers, body: {
-            'status': '200 OK',
-            'content': '\r\n'.join(registry.render()),
-        }),
+        ('GET', '/metrics', registry.handler),
     ])
     server = False
 

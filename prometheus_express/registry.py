@@ -1,12 +1,13 @@
+exposition_line = '\n'
+
 class CollectorRegistry():
     metrics = []
     namespace = ''
     path = ''
 
-    def __init__(self, metrics=[], namespace='', path='/metrics'):
+    def __init__(self, metrics=[], namespace=''):
         self.metrics = set(metrics)
         self.namespace = namespace
-        self.path = path
 
     def register(self, metric):
         if metric in self.metrics:
@@ -22,3 +23,9 @@ class CollectorRegistry():
             metrics.extend(line)
 
         return metrics
+
+    def handler(self, headers, body):
+        return {
+            'status': '200 OK',
+            'content': exposition_line.join(self.render()),
+        }
