@@ -50,12 +50,12 @@ def main():
     while not ready:
         ready = check_network(eth)
 
-    rgb[0] = BLUE  # connected
-    while not server:
-        server = start_http_server(8080, address=eth.ifconfig()[0])
-
-    rgb[0] = GREEN  # ready
     while True:
+        rgb[0] = BLUE  # connected
+        while not server:
+            server = start_http_server(8080, address=eth.ifconfig()[0])
+
+        rgb[0] = GREEN  # ready
         metric_h.labels(str(random.randint(1, 5))).set(random.randint(25, 100))
         metric_t.labels(str(random.randint(1, 5))).inc(random.randint(1, 5))
         metric_s.labels(str(random.randint(1, 5))).observe(
@@ -66,7 +66,8 @@ def main():
             pass
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server = start_http_server(8080, address=eth.ifconfig()[0])
+        except ValueError as err:
+            print('Error parsing request: {}'.format(err))
 
 
 main()

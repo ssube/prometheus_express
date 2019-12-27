@@ -61,19 +61,20 @@ def main():
         ready = check_network(eth)
         led.value = ready
 
-    rgb[0] = BLUE  # connected
-    while not server:
-        server = start_http_server(8080, address=eth.ifconfig()[0])
-
-    rgb[0] = GREEN  # ready
     while True:
+        rgb[0] = BLUE  # connected
+        while not server:
+            server = start_http_server(8080, address=eth.ifconfig()[0])
+
+        rgb[0] = GREEN  # ready
         metric_c.inc(random.randint(0, 50))
         metric_g.set(random.randint(0, 5000))
         try:
             server.accept(router)
         except OSError as err:
             print('Error accepting request: {}'.format(err))
-            server = start_http_server(8080, address=eth.ifconfig()[0])
+        except ValueError as err:
+            print('Error parsing request: {}'.format(err))
 
 
 main()
