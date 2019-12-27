@@ -25,15 +25,22 @@ def render_name(namespace, name):
     else:
         return name
 
+def is_alpha(c):
+    return (
+        c >= 'a' and c <= 'z' or    # lowercase alpha
+        c >= 'A' and c <= 'Z')      # uppercase alpha
+
+def is_numeric(c):
+    return (c >= '0' and c <= '9')
+
 '''
 Validate a single character. This avoids importing regex on the Express platform.
 From https://github.com/prometheus/common/blob/master/model/metric.go#L97
 '''
 def validate_name_char(c, num):
     return (
-        (c >= 'a' and c <= 'z') or # lowercase alpha
-        (c >= 'A' and c <= 'Z') or # uppercase alpha
-        (num and (c >= '0' and c <= '9')) or # numeric
+        is_alpha(c) or
+        (num and is_numeric(c)) or
         c == '_' or
         c == ':')
 
