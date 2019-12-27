@@ -71,7 +71,7 @@ prom_express_temperature{sensor="si7021"} 24.3325
 
 [![github release link](https://img.shields.io/badge/github-release-blue?logo=github)](https://github.com/ssube/prometheus_express/releases)
 [![github release version](https://img.shields.io/github/tag/ssube/prometheus_express.svg)](https://github.com/ssube/prometheus_express/releases)
-[![github commits since release](https://img.shields.io/github/commits-since/ssube/prometheus_express/v0.0.3.svg)](https://github.com/ssube/prometheus_express/compare/v0.0.3...master)
+[![github commits since release](https://img.shields.io/github/commits-since/ssube/prometheus_express/v0.0.4.svg)](https://github.com/ssube/prometheus_express/compare/v0.0.4...master)
 
 [![PyPI release link](https://img.shields.io/badge/pypi-package-blue?logo=pypi)](https://github.com/ssube/prometheus_express/releases)
 [![PyPI release version](https://img.shields.io/pypi/v/prometheus_express?color=green)](https://pypi.org/project/prometheus-express/)
