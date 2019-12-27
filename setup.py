@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="prometheus_express",
-    version="0.0.3",
+    version="0.0.4",
     author="Sean Sube",
     author_email="seansube@gmail.com",
     description="Prometheus SDK for CircuitPython Express ARM devices",

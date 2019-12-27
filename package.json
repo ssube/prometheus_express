@@ -1,6 +1,6 @@
 {
   "name": "prometheus_express",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "prometheus client/server",
   "main": "index.js",
   "repository": "git@github.com:ssube/prometheus_express.git",

@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/ssube/prometheus_express/compare/v0.0.3...v0.0.4) (2019-12-27)
+
+
+### Features
+
+* **registry:** provide render handler ([9fc6dbc](https://github.com/ssube/prometheus_express/commit/9fc6dbc00125657425ce7fb335a4bcf66ad2ba79))
+
+
+### Bug Fixes
+
+* **docs:** link pypi badge to package ([72a5b0b](https://github.com/ssube/prometheus_express/commit/72a5b0b0a5114b4b8c9c2b848b32650b8be03aef))
+* **examples:** handle parsing errors in minimal ([9623e42](https://github.com/ssube/prometheus_express/commit/9623e42cbafe4732c8e9338b2a3858bdb8bf67a5))
+* **examples:** remove duplicate import from cpython ([91cf326](https://github.com/ssube/prometheus_express/commit/91cf3261da7ef6c35b83bcfded09fa8d623546ba))
+* **metric:** handle dec correctly when no value exists for labels ([a3dcea1](https://github.com/ssube/prometheus_express/commit/a3dcea1bc437740b08f8d1240f4d68842b69ffc5))
+* **metric:** only print help/type once for summaries ([ad58e32](https://github.com/ssube/prometheus_express/commit/ad58e32d9113a9fee28c5adf09e1478e49954697))
+* **router:** register new routes correctly ([74da839](https://github.com/ssube/prometheus_express/commit/74da839daa7f4f8ef5502f0a9bc92b156c720a16))
+* **server:** ensure complete http header is present ([efa6694](https://github.com/ssube/prometheus_express/commit/efa66943e30971f809c7db0dd9772019480f0415))
+* **test:** decode response chunks in mock ([e6e959b](https://github.com/ssube/prometheus_express/commit/e6e959bad3d5537b4ef68a0432e959fff8616fb1))
+* **test:** encode mock conn responses ([b8da77b](https://github.com/ssube/prometheus_express/commit/b8da77b2d56b77af569e03b831cdc9dd3f1e573e))
+
 ### 0.0.3 (2019-12-25)
 
 
