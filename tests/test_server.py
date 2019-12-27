@@ -40,12 +40,11 @@ class ServerAcceptTest(unittest.TestCase):
     mock = MockSocket('0.0.0.1', 'GET / HTTP/1.1\r\n{}'.format(body))
 
     s = ps.Server(mock)
-    r = pr.Router([
-      ('GET', '/', lambda headers, requestBody: {
-        'content': body,
-        'status': 200,
-      }),
-    ])
+    r = pr.Router()
+    r.register('GET', '/', lambda headers, req: {
+      'content': body,
+      'status': 200,
+    })
     s.accept(r)
 
     result = mock.conn.response()
@@ -59,9 +58,8 @@ class ServerAcceptTest(unittest.TestCase):
     mock = MockSocket('0.0.0.1', 'HTTP/1.1\r\n{}'.format(body))
 
     s = ps.Server(mock)
-    r = pr.Router([
-      ('GET', '/', lambda: body),
-    ])
+    r = pr.Router()
+    r.register('GET', '/', lambda headers, req: body)
 
     with self.assertRaises(ValueError):
       s.accept(r)

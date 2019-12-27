@@ -1,4 +1,6 @@
-exposition_line = '\n'
+from prometheus_express.router import response
+
+exposition_break = '\n'
 
 class CollectorRegistry():
     metrics = []
@@ -25,7 +27,4 @@ class CollectorRegistry():
         return metrics
 
     def handler(self, headers, body):
-        return {
-            'status': '200 OK',
-            'content': exposition_line.join(self.render()),
-        }
+        return response(exposition_break.join(self.render()))

@@ -63,9 +63,8 @@ def main():
     metric_temperature = Gauge('temperature',
                                'temperature from both sensors', ['sensor'], registry=registry)
 
-    router = Router([
-        ('GET', '/metrics', registry.handler),
-    ])
+    router = Router()
+    router.register('GET', '/metrics', registry.handler)
     server = False
 
     rgb[0] = RED  # starting

@@ -41,9 +41,8 @@ def main():
     metric_s = Summary('si7021_random', 'random data', [
                        'random_tag'], registry=registry)
 
-    router = Router([
-        ('GET', '/metrics', registry.handler),
-    ])
+    router = Router()
+    router.register('GET', '/metrics', registry.handler)
     server = False
 
     rgb[0] = RED  # starting

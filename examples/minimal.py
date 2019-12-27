@@ -45,9 +45,8 @@ def main():
                      labels=['source'],
                      registry=registry)
 
-    router = Router([
-        ('GET', '/metrics', registry.handler),
-    ])
+    router = Router()
+    router.register('GET', '/metrics', registry.handler)
     server = False
 
     rgb[0] = RED  # starting
@@ -57,7 +56,7 @@ def main():
 
     while True:
         rgb[0] = BLUE  # connected
-        if not server:
+        while not server:
             server = start_http_server(server_port, address=eth.ifconfig()[0])
 
         rgb[0] = GREEN  # ready

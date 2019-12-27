@@ -1,15 +1,26 @@
-def errorHandler(headers, body):
+def response(content, status='200 OK'):
     return {
-      'status': 404,
-      'content': 'Not Found',
+        'status': status,
+        'content': content,
     }
 
+def errorHandler(headers, body):
+    return response('Not Found', '404 Not Found')
 
 class Router():
-    routes = []
+    def __init__(self):
+        self.routes = []
 
-    def __init__(self, routes=[]):
-        self.routes = routes
+    def __contains__(self, route):
+        for r in self.routes:
+            if r[0] == route[0] and r[1] == route[1]:
+                return r[2]
+
+    def __iter__(self):
+        return self.routes.__iter__()
+
+    def __len__(self):
+        return self.routes.__len__()
 
     def register(self, method, path, handler):
         self.routes.append((method, path, handler))
