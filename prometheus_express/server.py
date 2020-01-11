@@ -29,11 +29,9 @@ class Server():
 
     def accept(self, router):
         conn, addr = self.http_socket.accept()
-        print('Connection: {}'.format(addr))
 
         req = conn.recv(1024).decode(http_encoding)
         req_headers, req_body = self.parse_headers(req)
-        print('Headers: {}'.format(req_headers))
 
         handler = router.select(req_headers['method'], req_headers['path'])
         resp = handler(req_headers, req_body)
