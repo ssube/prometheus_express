@@ -1,17 +1,17 @@
 # prometheus_express
 
-A [Prometheus](https://prometheus.io/) SDK for CircuitPython/MicroPython boards, allowing sensor data to be integrated
-into existing Prometheus/Grafana monitoring infrastructure.
+A [Prometheus](https://prometheus.io/) SDK for CircuitPython and MicroPython boards, helping integrate I2C and SPI
+sensors into existing Prometheus monitoring infrastructure.
 
 - only depends on `socket`
-- runs on CircuitPython 4.x for embedded devices
-- runs on CPython 3.x for local testing
+- runs on CircuitPython 4.x and MicroPython for ESP32 and M0/M4 devices
+- runs even faster on CPython 3.x for local testing
 - API compatible with the official [prometheus/client_python](https://github.com/prometheus/client_python)
 - basic HTTP server with path/method routing
-- not terribly slow (50 rps on an M4 core, 5k on an i7 core)
+- not terribly slow (20 rps on an ESP32, 50 rps on an M4 core, 5k on an i7 core)
 
-For those unfamiliar with Prometheus, the examples expose an HTTP server on port `:8080` that reports metrics in a
-plaintext format:
+For those unfamiliar with Prometheus, the examples expose an HTTP server on port `:8080` that serves `/metrics` in
+a readable, plaintext format:
 
 ```none
 # HELP prom_express_gas gas from the bme680 sensor
@@ -32,6 +32,9 @@ prom_express_temperature{sensor="bme680"} 24.7359
 prom_express_temperature{sensor="si7021"} 24.3325
 ```
 
+The Prometheus server will occasionally scrape each device, collecting sensor readings with metadata about
+their source, and passing the samples on to [long-term storage](https://github.com/ssube/prometheus-sql-adapter/).
+
 ## Contents
 
 - [prometheus_express](#prometheusexpress)
@@ -40,8 +43,8 @@ prom_express_temperature{sensor="si7021"} 24.3325
   - [Releases](#releases)
   - [Supported Hardware](#supported-hardware)
   - [Supported Features](#supported-features)
-    - [HTTP](#http)
-    - [Labels](#labels)
+    - [HTTP Server](#http-server)
+    - [Metric Labels](#metric-labels)
     - [Metric Types](#metric-types)
       - [Counter](#counter)
       - [Gauge](#gauge)
@@ -49,7 +52,8 @@ prom_express_temperature{sensor="si7021"} 24.3325
     - [Registries](#registries)
   - [Planned Features](#planned-features)
   - [Known Issues](#known-issues)
-    - [Load Causes OSError](#load-causes-oserror)
+    - [OSError 3, 4, or 7](#oserror-3-4-or-7)
+    - [OSError 112](#oserror-112)
 
 ## Status
 
@@ -78,19 +82,27 @@ prom_express_temperature{sensor="si7021"} 24.3325
 
 ## Supported Hardware
 
-This library is developed for the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running
-MicroPython 4.1.0 or better, with an [Adafruit Ethernet FeatherWing](https://www.adafruit.com/product/3201) attached.
+This library is tested on:
+
+- the [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) running MicroPython 4.1.0 or better,
+  with an [Adafruit Ethernet FeatherWing](https://www.adafruit.com/product/3201) attached (using the Wiznet5500
+  driver).
+- the [Olimex ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware) running
+  CircuitPython 1.12.0 or better, with wifi or wired ethernet (using the LAN8720 driver)
 
 ## Supported Features
 
-### HTTP
+### HTTP Server
 
-This module implements a very rudimentary HTTP server that likely violates some part of the spec. However, it works
-with Chrome, curl, and Prometheus itself.
+This module implements a very rudimentary HTTP server that almost certainly violates some part of the spec.
+However, it works with Chrome, curl, and Prometheus itself. Depending on the platform, it may also work with
+`wrk` benchmarks ([known issues](#known-issues)).
 
-### Labels
+### Metric Labels
 
 Labels are stored and used to accumulate values. Missing labels are reported as `None`.
+
+If a metric is constructed with labels, a default entry with all values set to `None` will also be reported.
 
 ### Metric Types
 
@@ -134,11 +146,12 @@ Metrics may be registered with multiple registries.
 
 ## Known Issues
 
-### Load Causes OSError
+### OSError 3, 4, or 7
 
 Load testing the HTTP endpoint may cause one of a variety of `OSError`s, often `errno` 3, 4, or 7.
 
-Not sure what is causing the errors, but it is not predictable and may not appear immediately:
+[This is related to the Wiznet5500 driver](https://github.com/adafruit/circuitpython/issues/2073) for
+ethernet FeatherWings, and may not appear on other devices:
 
 ```shell
 > ./wrk -c 1 -d 60s -t 1 http://server:8080/
@@ -180,3 +193,11 @@ Error accepting request: 7
 Binding: server:8080
 Accepting...
 ```
+
+### OSError 112
+
+Certain crashes may leak open sockets, causing the device to log an `OSError 112` during startup.
+
+The error prevents the HTTP server from binding to the ethernet device, so an HTTP watchdog on the
+switch can be used to restart POE devices. The board can also be reset by calling `machine.reset()`
+from the REPL.
