@@ -66,6 +66,7 @@ def main():
     # setup display
     oled.init_display()
     oled.fill(0x0)
+    oled.text('00.00', 0, 0)
     oled.show()
 
     # setup Prometheus metrics
@@ -94,8 +95,12 @@ def main():
             server = bind(eth, config)
 
         bme_reading = bme.read_compensated_data()
-        oled.hline(0, 16, 128, 0x0)
-        oled.hline(0, 16, int(bme_reading[0]), 0xffffff)
+        temp_line = ((bme_reading[0] - 15) / 10) * 128
+        print('temp line: {}'.format(temp_line))
+
+        oled.fill(0x0)
+        oled.text(str(bme_reading[0]), 0, 0)
+        oled.hline(0, 16, int(temp_line), 0xffffff)
         oled.show()
 
         location = config['metric_location']
