@@ -1,6 +1,7 @@
 # library
 from prometheus_express import check_network, parse_file, start_http_server, temp_ftoc, CollectorRegistry, Counter, Gauge, Router
 from bme280_float import BME280
+from ssd1306 import SSD1306_I2C
 
 # system
 import esp32
@@ -52,6 +53,7 @@ def main():
     # setup sensors
     bus = machine.I2C(scl=machine.Pin(16), sda=machine.Pin(13))
     bme = BME280(i2c=bus)
+    oled = SSD1306_I2C(128, 32, bus)
 
     # setup storage
     card = machine.SDCard()
@@ -60,6 +62,11 @@ def main():
     # setup networking
     config = load_config('/card', 'config.yml')
     eth = start_network(config)
+
+    # setup display
+    oled.init_display()
+    oled.fill(0x0)
+    oled.show()
 
     # setup Prometheus metrics
     registry = CollectorRegistry(namespace='prometheus_express')
@@ -86,10 +93,15 @@ def main():
             time.sleep(1)
             server = bind(eth, config)
 
+        bme_reading = bme.read_compensated_data()
+        oled.hline(0, 16, 128, 0x0)
+        oled.hline(0, 16, int(bme_reading[0]), 0xffffff)
+        oled.show()
+
         location = config['metric_location']
         metric_c.labels(location).inc(1)
         metric_g.labels(location, 'esp32').set(temp_ftoc(esp32.raw_temperature()))
-        metric_g.labels(location, 'bme280').set(bme.read_compensated_data()[0])
+        metric_g.labels(location, 'bme280').set(bme_reading[0])
 
         try:
             server.accept(router)
