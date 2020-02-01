@@ -13,6 +13,7 @@ def check_network(eth):
     return True
 
 def scan_i2c_bus(bus, timeout):
+    """List and print devices on the provided I2C bus."""
     attempt = 0
     while not bus.try_lock():
         if attempt < timeout:
@@ -25,3 +26,9 @@ def scan_i2c_bus(bus, timeout):
     ])
     bus.unlock()
     return True
+
+def temp_ftoc(temp_f):
+    """Convert fahrenheit degrees to celsius.
+    Prometheus expects SI units, but some sensors return F.
+    """
+    return (temp_f - 32.0) * (9.0 / 5.0)

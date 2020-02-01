@@ -1,7 +1,8 @@
 # library
-from bme680 import BME680
 from prometheus_express import check_network, start_http_server, CollectorRegistry, Counter, Gauge, Router
-from usmbus import SMBus
+from si7021 import Si7021
+#from bme680 import BME680
+#from usmbus import SMBus
 
 # system
 import machine
@@ -10,8 +11,10 @@ import time
 
 server_port = 8080
 
-bus = SMBus(scl=machine.Pin(16), sda=machine.Pin(13))
-bme = BME680(i2c_device=bus, i2c_addr=119)
+#bus = SMBus(scl=machine.Pin(16), sda=machine.Pin(13))
+#bme = BME680(i2c_device=bus, i2c_addr=119)
+bus = machine.I2C(scl=machine.Pin(16), sda=machine.Pin(13))
+sil = Si7021(bus)
 
 def main():
   registry = CollectorRegistry(namespace='prom_esp32')
@@ -24,7 +27,7 @@ def main():
   metric_g = Gauge(
     'bme680_temperature',
     'temperature data from the bme680 sensor',
-    labels=[],
+    labels=['source'],
     registry=registry
   )
 
@@ -56,9 +59,11 @@ def main():
       print('Binding server: {}'.format(ip))
       server = start_http_server(server_port, address=ip)
 
-    if bme.get_sensor_data():
-      metric_c.inc(1)
-      metric_g.set(bme.data.temperature)
+    #if bme.get_sensor_data():
+    #  metric_c.inc(1)
+    #  metric_g.set(bme.data.temperature)
+    metric_c.labels('si7021').inc(1)
+    metric_g.labels('si7021').set(sil.temperature)
 
     try:
       server.accept(router)

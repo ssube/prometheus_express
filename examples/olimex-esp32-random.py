@@ -1,5 +1,5 @@
 # library
-from prometheus_express import check_network, start_http_server, CollectorRegistry, Counter, Gauge, Router
+from prometheus_express import start_http_server, CollectorRegistry, Counter, Router
 
 # system
 import machine

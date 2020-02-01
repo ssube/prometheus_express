@@ -1,5 +1,6 @@
 from prometheus_express.metric import render_help, render_labels, render_name, Metric, Counter, Gauge, Summary
+from prometheus_express.parser import parse_file, parse_str
 from prometheus_express.registry import CollectorRegistry
 from prometheus_express.router import Router
 from prometheus_express.server import start_http_server, Server
-from prometheus_express.utils import check_network, scan_i2c_bus
+from prometheus_express.utils import check_network, scan_i2c_bus, temp_ftoc
