@@ -1,6 +1,6 @@
 # library
 from prometheus_express import check_network, parse_file, start_http_server, temp_ftoc, CollectorRegistry, Counter, Gauge, Router
-from bme280_float import BME280
+from bme280 import BME280
 from ssd1306 import SSD1306_I2C
 
 # system
