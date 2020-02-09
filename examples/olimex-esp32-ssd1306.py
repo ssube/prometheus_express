@@ -1,5 +1,8 @@
 # library
-from prometheus_express import check_network, parse_file, start_http_server, temp_ftoc, CollectorRegistry, Counter, Gauge, Router
+from redesigned_barnacle.config import parse_file
+from redesigned_barnacle.eth import eth_start
+from redesigned_barnacle.unit import temp_ftoc
+from prometheus_express import start_http_server, CollectorRegistry, Counter, Gauge, Router
 from bme280 import BME280
 from ssd1306 import SSD1306_I2C
 
@@ -30,25 +33,6 @@ def load_config(path, name):
     return config
 
 
-def start_network(config):
-    eth_power = machine.Pin(12, machine.Pin.OUT)
-    eth_power.value(1)
-
-    eth = network.LAN(
-        mdc=machine.Pin(23),
-        mdio=machine.Pin(18),
-        phy_type=network.PHY_LAN8720,
-        phy_addr=0,
-        clock_mode=network.ETH_CLOCK_GPIO17_OUT
-    )
-
-    eth.ifconfig((config['net_ip'], config['net_mask'],
-                  config['net_gw'], config['net_dns']))
-    eth.active(True)
-
-    return eth
-
-
 def main():
     # setup sensors
     bus = machine.I2C(scl=machine.Pin(16), sda=machine.Pin(13))
@@ -61,23 +45,30 @@ def main():
 
     # setup networking
     config = load_config('/card', 'config.yml')
-    eth = start_network(config)
+    eth = eth_start(
+        config,
+        mdc=machine.Pin(23),
+        mdio=machine.Pin(18),
+        phy_type=network.PHY_LAN8720,
+        phy_addr=0,
+        clock_mode=network.ETH_CLOCK_GPIO17_OUT
+    )
 
     # setup display
     oled.init_display()
     oled.fill(0x0)
-    oled.text('00.00', 0, 0)
+    oled.text('loading', 0, 0)
     oled.show()
 
     # setup Prometheus metrics
     registry = CollectorRegistry(namespace='prometheus_express')
-    metric_c = Counter(
+    metric_beat = Counter(
         'system_heartbeat',
         'system heartbeat counter',
         labels=['location'],
         registry=registry
     )
-    metric_g = Gauge(
+    metric_temp = Gauge(
         'sensor_temperature',
         'temperature data from the sensors',
         labels=['location', 'sensor'],
@@ -104,9 +95,9 @@ def main():
         oled.show()
 
         location = config['metric_location']
-        metric_c.labels(location).inc(1)
-        metric_g.labels(location, 'esp32').set(temp_ftoc(esp32.raw_temperature()))
-        metric_g.labels(location, 'bme280').set(bme_reading[0])
+        metric_beat.labels(location).inc(1)
+        metric_temp.labels(location, 'esp32').set(temp_ftoc(esp32.raw_temperature()))
+        metric_temp.labels(location, 'bme280').set(bme_reading[0])
 
         try:
             server.accept(router)
