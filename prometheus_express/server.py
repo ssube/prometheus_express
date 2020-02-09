@@ -10,7 +10,8 @@ def start_http_server(port, address='0.0.0.0', depth=2, timeout=5.0):
     bind_address = (address, port)
 
     http_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    http_socket.bind(bind_address) # lgtm [py/bind-socket-all-network-interfaces]
+    # lgtm [py/bind-socket-all-network-interfaces]
+    http_socket.bind(bind_address)
     http_socket.listen(depth)
 
     try:
