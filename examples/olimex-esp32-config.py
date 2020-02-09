@@ -6,7 +6,7 @@ from bme280 import BME280
 import esp32
 import machine
 import network
-import uos
+import os
 import time
 
 
@@ -19,7 +19,7 @@ def bind(eth, config):
 
 
 def load_config(path, name):
-    files = uos.listdir(path)
+    files = os.listdir(path)
     if not name in files:
         raise Exception('config file missing')
 
@@ -55,7 +55,7 @@ def main():
 
     # setup storage
     card = machine.SDCard()
-    uos.mount(card, '/card')
+    os.mount(card, '/card')
 
     # setup networking
     config = load_config('/card', 'config.yml')
