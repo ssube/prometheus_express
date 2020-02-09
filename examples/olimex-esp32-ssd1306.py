@@ -1,6 +1,7 @@
 # library
-from redesigned_barnacle.config import parse_file
+from redesigned_barnacle.config import load_config, parse_file
 from redesigned_barnacle.eth import eth_start
+from redesigned_barnacle.sparkline import Sparkline
 from redesigned_barnacle.unit import temp_ftoc
 from prometheus_express import start_http_server, CollectorRegistry, Counter, Gauge, Router
 from bme280 import BME280
@@ -22,17 +23,6 @@ def bind(eth, config):
     return start_http_server(port, address=ip)
 
 
-def load_config(path, name):
-    files = os.listdir(path)
-    if not name in files:
-        raise Exception('config file missing')
-
-    config = parse_file('{}/{}'.format(path, name))
-    print('Config: {}'.format(config))
-
-    return config
-
-
 def main():
     # setup sensors
     bus = machine.I2C(scl=machine.Pin(16), sda=machine.Pin(13))
@@ -51,10 +41,12 @@ def main():
         mdio=machine.Pin(18),
         phy_type=network.PHY_LAN8720,
         phy_addr=0,
-        clock_mode=network.ETH_CLOCK_GPIO17_OUT
+        clock_mode=network.ETH_CLOCK_GPIO17_OUT,
+        power_pin=machine.Pin(12, machine.Pin.OUT)
     )
 
     # setup display
+    sl = Sparkline(32, 128)
     oled.init_display()
     oled.fill(0x0)
     oled.text('loading', 0, 0)
@@ -86,17 +78,19 @@ def main():
             server = bind(eth, config)
 
         bme_reading = bme.read_compensated_data()
-        temp_line = ((bme_reading[0] - 15) / 10) * 128
+        temp_line = ((bme_reading[0] - 12) * 2) % 32
         print('temp line: {}'.format(temp_line))
 
         oled.fill(0x0)
+        sl.push(temp_line)
+        sl.draw(oled, 0, 12)
         oled.text(str(bme_reading[0]), 0, 0)
-        oled.hline(0, 16, int(temp_line), 0xffffff)
         oled.show()
 
         location = config['metric_location']
         metric_beat.labels(location).inc(1)
-        metric_temp.labels(location, 'esp32').set(temp_ftoc(esp32.raw_temperature()))
+        metric_temp.labels(location, 'esp32').set(
+            temp_ftoc(esp32.raw_temperature()))
         metric_temp.labels(location, 'bme280').set(bme_reading[0])
 
         try:
