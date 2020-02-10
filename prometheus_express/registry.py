@@ -2,6 +2,9 @@ from prometheus_express.router import response
 
 exposition_break = '\n'
 
+def name_sort(metric):
+    return metric.name
+
 class CollectorRegistry():
     metrics = []
     namespace = ''
@@ -18,13 +21,17 @@ class CollectorRegistry():
         self.metrics.add(metric)
         return True
 
-    def render(self):
-        metrics = []
-        for m in self.metrics:
-            line = m.render(self.namespace)
-            metrics.extend(line)
+    def render(self, sorted=False):
+        if sorted:
+            metrics = sorted(self.metrics, key=name_sort)
+        else:
+            metrics = self.metrics
 
-        return metrics
+        output = []
+        for m in metrics:
+            output.extend(m.render(self.namespace))
+
+        return output
 
     def handler(self, headers, body):
         return response(exposition_break.join(self.render()))
