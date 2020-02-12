@@ -7,6 +7,7 @@ import os
 import time
 
 # library
+from redesigned_barnacle.buffer import CircularBuffer
 from redesigned_barnacle.config import load_config, parse_file
 from redesigned_barnacle.eth import eth_check, eth_start
 from redesigned_barnacle.i2c import CircuitI2C
@@ -54,13 +55,15 @@ def main():
     )
 
     # setup display
-    sl = Sparkline(16, 128)
+    sb = CircularBuffer(16, 8)
+    sl = Sparkline(16, 128, sb)
     oled.init_display()
     oled.fill(0x0)
     oled.text('00.00', 0, 0)
     oled.show()
 
     # setup Prometheus metrics
+    #region: metrics
     registry = CollectorRegistry(namespace='prometheus_express')
     metric_beat = Counter(
         'system_heartbeat',
@@ -101,6 +104,43 @@ def main():
         registry=registry
     )
 
+    # displayed values
+    display_metrics = {
+        'moisture': 0,
+        'temp': 0
+    }
+
+    def sample_sensors(t):
+        print('Sampling sensor data...', t)
+        # sample sensors
+        bme_reading = bme.read_compensated_data()
+        esp_reading = esp32.raw_temperature()
+        stemma_reading = ss.moisture_read()
+
+        # buffer last reading
+        scaled_temp = scale(bme_reading[0], 16, 24)
+        sl.push(scaled_temp)
+
+        # update metrics
+        metric_alloc.set(gc.mem_alloc())
+        metric_beat.inc(1)
+        metric_cpu.set(machine.freq())
+        metric_free.set(gc.mem_free())
+
+        location = config['metric_location']
+        metric_humidity.labels(location, 'bme280').set(bme_reading[2])
+        metric_moisture.labels(location, 'stemma').set(stemma_reading)
+        metric_temp.labels(location, 'esp32').set(temp_ftoc(esp_reading))
+        metric_temp.labels(location, 'bme280').set(bme_reading[0])
+        metric_temp.labels(location, 'stemma').set(ss.get_temp())
+
+        display_metrics['moisture'] = stemma_reading
+        display_metrics['temp'] = bme_reading[0]
+
+    #endregion
+
+    # setup HTTP routing
+    #region: routing
     def authenticate(headers, body):
         print('authenticating:', headers, body)
         return None
@@ -116,41 +156,28 @@ def main():
                     bind_middleware(config_read, [authenticate]))
     router.register('GET', '/metrics', registry.handler)
     server = False
+    #endregion
 
-    # server loop
+    # main server loop
+    timer = machine.Timer(-1)
+    timer.init(period=5000, mode=machine.Timer.PERIODIC, callback=sample_sensors)
+
     while True:
+        while not eth_check(eth):
+            print('Waiting for ethernet connection...')
+            time.sleep(1)
+
         while not server:
+            print('Attempting to bind server...')
             time.sleep(1)
             server = bind(eth, config)
-
-        # sample sensors
-        bme_reading = bme.read_compensated_data()
-        esp_reading = esp32.raw_temperature()
-        stemma_reading = ss.moisture_read()
-
-        # buffer last reading
-        scaled_temp = scale(bme_reading[0], 16, 24)
-        sl.push(scaled_temp)
 
         # update display
         oled.fill(0x0)
         sl.draw(oled, 0, 16)
-        oled.text('{:04.2f}'.format(bme_reading[0]), 0, 0)
-        oled.text('{:04.2f}'.format(stemma_reading), 64, 0)
+        oled.text('{:04.2f}'.format(display_metrics['temp']), 0, 0)
+        oled.text('{:04.2f}'.format(display_metrics['moisture']), 64, 0)
         oled.show()
-
-        # update metrics
-        metric_alloc.set(gc.mem_alloc())
-        metric_beat.inc(1)
-        metric_cpu.set(machine.freq())
-        metric_free.set(gc.mem_free())
-
-        location = config['metric_location']
-        metric_humidity.labels(location, 'bme280').set(bme_reading[2])
-        metric_moisture.labels(location, 'stemma').set(stemma_reading)
-        metric_temp.labels(location, 'esp32').set(temp_ftoc(esp_reading))
-        metric_temp.labels(location, 'bme280').set(bme_reading[0])
-        metric_temp.labels(location, 'stemma').set(ss.get_temp())
 
         # wait for request
         try:
@@ -159,6 +186,5 @@ def main():
             print('Error accepting request: {}'.format(err))
         except ValueError as err:
             print('Error parsing request: {}'.format(err))
-
 
 main()
