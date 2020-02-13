@@ -104,40 +104,39 @@ def main():
         registry=registry
     )
 
-    # displayed values
-    display_metrics = {
-        'moisture': 0,
-        'temp': 0
-    }
-
     def sample_sensors(t):
-        print('Sampling sensor data...', t)
-        # sample sensors
-        bme_reading = bme.read_compensated_data()
-        esp_reading = esp32.raw_temperature()
-        stemma_reading = ss.moisture_read()
-
-        # buffer last reading
-        scaled_temp = scale(bme_reading[0], 16, 24)
-        sl.push(scaled_temp)
-
         # update metrics
         metric_alloc.set(gc.mem_alloc())
         metric_beat.inc(1)
         metric_cpu.set(machine.freq())
         metric_free.set(gc.mem_free())
 
+        # sample sensors
+        bme_reading = bme.read_compensated_data()
+        esp_reading = esp32.raw_temperature()
+        stemma_reading = ss.moisture_read()
         location = config['metric_location']
+
         metric_humidity.labels(location, 'bme280').set(bme_reading[2])
         metric_moisture.labels(location, 'stemma').set(stemma_reading)
         metric_temp.labels(location, 'esp32').set(temp_ftoc(esp_reading))
         metric_temp.labels(location, 'bme280').set(bme_reading[0])
         metric_temp.labels(location, 'stemma').set(ss.get_temp())
 
-        display_metrics['moisture'] = stemma_reading
-        display_metrics['temp'] = bme_reading[0]
+        # scale & buffer last reading
+        sl.push(scale(bme_reading[0], 16, 24))
 
-    #endregion
+        # update display
+        display_moisture = stemma_reading
+        display_temp = bme_reading[0]
+
+        oled.fill(0x0)
+        sl.draw(oled, 0, 16)
+        oled.text('{:04.2f}'.format(display_temp), 0, 0)
+        oled.text('{:04.2f}'.format(display_moisture), 64, 0)
+        oled.show()
+
+    # endregion
 
     # setup HTTP routing
     #region: routing
@@ -156,11 +155,12 @@ def main():
                     bind_middleware(config_read, [authenticate]))
     router.register('GET', '/metrics', registry.handler)
     server = False
-    #endregion
+    # endregion
 
     # main server loop
     timer = machine.Timer(-1)
-    timer.init(period=5000, mode=machine.Timer.PERIODIC, callback=sample_sensors)
+    timer.init(period=5000, mode=machine.Timer.PERIODIC,
+               callback=sample_sensors)
 
     while True:
         while not eth_check(eth):
@@ -172,13 +172,6 @@ def main():
             time.sleep(1)
             server = bind(eth, config)
 
-        # update display
-        oled.fill(0x0)
-        sl.draw(oled, 0, 16)
-        oled.text('{:04.2f}'.format(display_metrics['temp']), 0, 0)
-        oled.text('{:04.2f}'.format(display_metrics['moisture']), 64, 0)
-        oled.show()
-
         # wait for request
         try:
             server.accept(router)
@@ -186,5 +179,6 @@ def main():
             print('Error accepting request: {}'.format(err))
         except ValueError as err:
             print('Error parsing request: {}'.format(err))
+
 
 main()
