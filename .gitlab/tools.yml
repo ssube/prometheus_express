@@ -6,7 +6,7 @@
 .build-curl:
   extends:
     - .shared-runner
-  image: apextoaster/base:1.2
+  image: apextoaster/base:1.4
 
 .build-climate:
   extends:
