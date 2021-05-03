@@ -6,12 +6,12 @@
 .build-curl:
   extends:
     - .shared-runner
-  image: apextoaster/base:1.4
+  image: docker.artifacts.apextoaster.com/apextoaster/base:1.4
 
 .build-climate:
   extends:
     - .shared-runner
-  image: apextoaster/code-climate:0.6
+  image: docker.artifacts.apextoaster.com/apextoaster/code-climate:0.6
   allow_failure: false
   variables:
     CI_BRANCH: "${CI_COMMIT_REF_NAME}"
@@ -21,15 +21,15 @@
 .build-codecov:
   extends:
     - .shared-runner
-  image: apextoaster/codecov:3.1
+  image: docker.artifacts.apextoaster.com/apextoaster/codecov:3.1
   allow_failure: false
 
 .build-docker:
   extends:
     - .shared-runner
-  image: apextoaster/docker:18.09
+  image: docker.artifacts.apextoaster.com/apextoaster/docker:18.09
   services:
-    - apextoaster/docker-dind:18.09
+    - docker.artifacts.apextoaster.com/apextoaster/docker-dind:18.09
   allow_failure: false
 
   before_script:
@@ -47,13 +47,13 @@
 .build-go:
   extends:
     - .shared-runner
-  image: golang:1.13
+  image: docker.artifacts.apextoaster.com/golang:1.13
   allow_failure: false
 
 .build-node:
   extends:
     - .shared-runner
-  image: apextoaster/node:11.15
+  image: docker.artifacts.apextoaster.com/apextoaster/node:11.15
   allow_failure: false
 
   before_script:
@@ -62,10 +62,10 @@
 .build-python:
   extends:
     - .shared-runner
-  image: python:3.7
+  image: docker.artifacts.apextoaster.com/python:3.7
 
 .build-sonar:
   extends:
     - .shared-runner
-  image: apextoaster/sonar-scanner:3.3
+  image: docker.artifacts.apextoaster.com/apextoaster/sonar-scanner:3.3
   allow_failure: false
