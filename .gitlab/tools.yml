@@ -62,7 +62,7 @@
 .build-python:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/library/python:3.7
+  image: docker.artifacts.apextoaster.com/library/python:3.9
 
 .build-sonar:
   extends:
