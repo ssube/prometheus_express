@@ -53,7 +53,7 @@
 .build-node:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/node:11.15
+  image: docker.artifacts.apextoaster.com/apextoaster/node:12.22
   allow_failure: false
 
   before_script:
