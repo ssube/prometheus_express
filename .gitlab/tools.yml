@@ -21,7 +21,7 @@
 .build-codecov:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/codecov:3.1
+  image: docker.artifacts.apextoaster.com/apextoaster/codecov:3.7
   allow_failure: false
 
 .build-docker:
