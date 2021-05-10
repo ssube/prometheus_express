@@ -67,5 +67,5 @@
 .build-sonar:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/sonar-scanner:3.3
+  image: docker.artifacts.apextoaster.com/apextoaster/sonar-scanner:4.4
   allow_failure: false
