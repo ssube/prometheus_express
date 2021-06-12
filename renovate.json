@@ -1,5 +1,77 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    ":semanticCommitTypeAll(update)",
+    ":semanticCommitScopeDisabled"
+  ],
+  "branchPrefix": "update/",
+  "packageRules": [
+    {
+      "automerge": true,
+      "matchPackageNames": [
+        "@microsoft/api-documenter",
+        "@microsoft/api-extractor"
+      ],
+      "extends": [
+        "schedule:earlyMondays"
+      ],
+      "groupName": "rushstack"
+    },
+    {
+      "matchPackageNames": [
+        "aws-sdk"
+      ],
+      "extends": [
+        "schedule:earlyMondays"
+      ]
+    },
+    {
+      "automerge": true,
+      "matchPackageNames": [
+        "@istanbuljs/nyc-config-typescript",
+        "@types/chai",
+        "@types/chai-as-promised",
+        "@types/mocha",
+        "@types/sinon",
+        "@types/sinon-chai",
+        "chai",
+        "chai-as-promised",
+        "mocha",
+        "nyc",
+        "sinon",
+        "sinon-chai"
+      ],
+      "extends": [
+        "schedule:daily"
+      ],
+      "groupName": "tests"
+    },
+    {
+      "matchPackagePatterns": [
+        "eslint",
+        "eslint-plugin-.+"
+      ],
+      "matchPackagePrefixes": [
+        "eslint"
+      ],
+      "extends": [
+        "schedule:daily"
+      ],
+      "groupName": "eslint-plugins"
+    },
+    {
+      "matchPackagePatterns": [
+        "rollup",
+        "rollup-plugin-.+",
+        "@rollup/plugin-.+"
+      ],
+      "matchPackagePrefixes": [
+        "@rollup"
+      ],
+      "extends": [
+        "schedule:earlyMondays"
+      ],
+      "groupName": "rollup-plugins"
+    }
   ]
 }
