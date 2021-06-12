@@ -39,17 +39,6 @@ climate-success:
   script:
     - make upload-climate
 
-codecov-success:
-  stage: status-post
-  extends:
-    - .build-codecov
-
-  when: on_success
-  dependencies:
-    - build-python
-  script:
-    - make upload-codecov
-
 github-pending:
   stage: status-pre
   extends:
