@@ -6,7 +6,7 @@
 .build-curl:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/base:1.4
+  image: docker.artifacts.apextoaster.com/apextoaster/base:1.5
 
 .build-climate:
   extends:
