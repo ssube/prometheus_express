@@ -18,18 +18,12 @@
     GIT_BRANCH: "${CI_COMMIT_REF_NAME}"
     GIT_COMMIT_SHA: "${CI_COMMIT_SHA}"
 
-.build-codecov:
-  extends:
-    - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/codecov:3.7
-  allow_failure: false
-
 .build-docker:
   extends:
     - .shared-runner
-  image: docker.artifacts.apextoaster.com/apextoaster/docker:18.09
+  image: docker.artifacts.apextoaster.com/apextoaster/docker:20.10
   services:
-    - docker.artifacts.apextoaster.com/apextoaster/docker-dind:18.09
+    - docker.artifacts.apextoaster.com/apextoaster/docker-dind:20.10
   allow_failure: false
 
   before_script:
@@ -41,8 +35,11 @@
     - rm -rfv ${HOME}/.docker
 
   variables:
+    DOCKER_CERT_PATH: "/shared/docker/client"
     DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_HOST: tcp://localhost:2376
+    DOCKER_TLS_CERTDIR: "/shared/docker"
+    DOCKER_TLS_VERIFY: 1
 
 .build-go:
   extends:
